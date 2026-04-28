@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파마브로스 Weekly Sync</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Pretendard:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f4f5f7;
+  --white: #ffffff;
+  --surface: #ffffff;
+  --border: #e4e7ed;
+  --border-light: #f0f2f5;
+  --text: #1a1d23;
+  --muted: #8b91a0;
+  --accent: #2563eb;
+  --accent-bg: #eff4ff;
+  --green: #16a34a;
+  --green-bg: #f0fdf4;
+  --red: #dc2626;
+  --red-bg: #fef2f2;
+  --orange: #ea580c;
+  --orange-bg: #fff7ed;
+  --purple: #7c3aed;
+  --purple-bg: #f5f3ff;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; line-height: 1.5; }
+
+/* ── Layout ── */
+.page { max-width: 1440px; margin: 0 auto; padding: 0 0 48px; }
+.topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+.logo { font-size: 15px; font-weight: 700; color: var(--accent); letter-spacing: -.3px; display: flex; align-items: center; gap: 8px; }
+.logo-dot { width: 8px; height: 8px; background: var(--accent); border-radius: 50%; }
+.topbar-meta { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--muted); }
+.topbar-date { font-weight: 500; color: var(--text); }
+.week-badge { background: var(--accent-bg); color: var(--accent); border-radius: 20px; padding: 3px 10px; font-size: 11px; font-weight: 600; }
+.content { padding: 24px 32px 0; }
+
+/* ── Section headers ── */
+.sec-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; margin-top: 28px; }
+.sec-num { width: 22px; height: 22px; background: var(--accent); color: white; border-radius: 6px; font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sec-title { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
+.sec-sub { font-size: 11px; color: var(--muted); margin-left: 4px; }
+
+/* ── Cards ── */
+.card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
+.card-header { padding: 14px 18px 12px; border-bottom: 1px solid var(--border-light); display: flex; align-items: center; justify-content: space-between; }
+.card-title { font-size: 12px; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; }
+.card-body { padding: 16px 18px; }
+.card-note { font-size: 11px; color: var(--muted); }
+
+/* ── KPI Grid ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+.kpi-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 16px 18px; box-shadow: var(--shadow); position: relative; overflow: hidden; }
+.kpi-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 12px 12px 0 0; }
+.kpi-card.blue::before { background: var(--accent); }
+.kpi-card.green::before { background: var(--green); }
+.kpi-card.red::before { background: var(--red); }
+.kpi-card.orange::before { background: var(--orange); }
+.kpi-card.purple::before { background: var(--purple); }
+.kpi-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+.kpi-value { font-size: 26px; font-weight: 700; letter-spacing: -.5px; line-height: 1.1; }
+.kpi-value.blue { color: var(--accent); }
+.kpi-value.green { color: var(--green); }
+.kpi-value.red { color: var(--red); }
+.kpi-value.orange { color: var(--orange); }
+.kpi-value.purple { color: var(--purple); }
+.kpi-sub { font-size: 11px; color: var(--muted); margin-top: 6px; }
+.kpi-delta { font-size: 12px; font-weight: 600; margin-top: 4px; }
+.up { color: var(--green); }
+.dn { color: var(--red); }
+.neu { color: var(--muted); }
+
+/* ── Progress bar ── */
+.progress-wrap { margin-top: 8px; }
+.progress-bg { background: var(--border-light); border-radius: 4px; height: 6px; overflow: hidden; }
+.progress-fill { height: 6px; border-radius: 4px; transition: width .6s ease; }
+
+/* ── Main grid layouts ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.grid-3-1 { display: grid; grid-template-columns: 3fr 1fr; gap: 16px; }
+.grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
+
+/* ── Chart wrappers ── */
+.chart-wrap { position: relative; width: 100%; }
+
+/* ── Tables ── */
+.data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.data-table th { color: var(--muted); font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 1.5px solid var(--border); font-size: 11px; white-space: nowrap; }
+.data-table th.num { text-align: right; }
+.data-table td { padding: 7px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.data-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #fafbfc; }
+.data-table .total-row td { font-weight: 700; background: var(--border-light); }
+
+/* ── Achievement badges ── */
+.ach { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 7px; border-radius: 6px; }
+.ach.over { background: var(--green-bg); color: var(--green); }
+.ach.meet { background: var(--accent-bg); color: var(--accent); }
+.ach.miss { background: var(--red-bg); color: var(--red); }
+.ach.none { background: var(--border-light); color: var(--muted); }
+
+/* ── Inventory status ── */
+.inv-bar { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; }
+.inv-dot { width: 7px; height: 7px; border-radius: 50%; }
+.inv-dot.safe { background: var(--green); }
+.inv-dot.warn { background: var(--orange); }
+.inv-dot.low { background: var(--red); }
+
+/* ── Channel chips ── */
+.ch-chip { display: inline-block; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; }
+
+/* ── Update box ── */
+.update-guide { background: var(--accent-bg); border: 1px solid #bfdbfe; border-radius: 12px; padding: 14px 18px; margin-top: 28px; font-size: 12px; }
+.update-guide h4 { color: var(--accent); font-weight: 700; margin-bottom: 8px; font-size: 12px; }
+.update-guide p { color: #1d4ed8; line-height: 1.8; }
+.update-guide code { background: white; border: 1px solid #bfdbfe; border-radius: 4px; padding: 1px 6px; font-family: monospace; font-size: 11px; }
+
+footer { margin-top: 32px; padding: 16px 32px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11px; display: flex; justify-content: space-between; background: var(--white); }
+
+/* ── Alert banner ── */
+.alert-bar { background: #fff7ed; border: 1px solid #fed7aa; border-radius: 10px; padding: 10px 16px; display: flex; align-items: flex-start; gap: 10px; margin-bottom: 14px; }
+.alert-icon { color: var(--orange); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.alert-text { font-size: 12px; color: #9a3412; line-height: 1.6; }
+/* ── Detail Modal ───────────────────────────────────────── */
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,20,0.6); z-index:2000; overflow-y:auto; padding:32px 16px; backdrop-filter:blur(2px); }
+.modal-panel { background:var(--white); max-width:1000px; margin:0 auto; border-radius:16px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.22); }
+.modal-head { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--white); }
+.modal-head-left { display:flex; align-items:center; gap:12px; }
+.modal-type-badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:.05em; }
+.modal-badge-pharm { background:var(--accent-bg); color:var(--accent); }
+.modal-badge-brand { background:#f5f3ff; color:#7c3aed; }
+.modal-title { font-size:17px; font-weight:700; letter-spacing:-.3px; }
+.modal-subtitle { font-size:11px; color:var(--muted); margin-top:2px; }
+.modal-close { width:30px; height:30px; border-radius:8px; border:1px solid var(--border); background:none; cursor:pointer; font-size:20px; color:var(--muted); display:flex; align-items:center; justify-content:center; line-height:1; flex-shrink:0; }
+.modal-close:hover { background:var(--border-light); color:var(--text); }
+.modal-kpi-row { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; background:var(--border); border-bottom:1px solid var(--border); }
+.modal-kpi { background:var(--white); padding:12px 18px; }
+.modal-kpi-label { font-size:10px; color:var(--muted); margin-bottom:3px; text-transform:uppercase; letter-spacing:.05em; }
+.modal-kpi-val { font-size:19px; font-weight:700; letter-spacing:-.3px; }
+.modal-kpi-delta { font-size:11px; margin-top:3px; }
+.modal-tabs { display:flex; border-bottom:1px solid var(--border); background:var(--white); padding:0 20px; }
+.modal-tab { padding:11px 16px; font-size:12px; font-weight:500; cursor:pointer; border-bottom:2px solid transparent; color:var(--muted); transition:color .15s; user-select:none; }
+.modal-tab:hover { color:var(--text); }
+.modal-tab.act { color:var(--accent); border-bottom-color:var(--accent); }
+.modal-body { padding:20px 24px 24px; }
+.tab-pane { display:none; }
+.tab-pane.act { display:block; }
+.modal-section-label { font-size:10px; color:var(--muted); letter-spacing:.07em; text-transform:uppercase; margin-bottom:8px; }
+.comment-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.comment-month-label { font-size:11px; font-weight:600; color:var(--text); margin-bottom:5px; }
+.comment-ta { width:100%; border:1px solid var(--border); border-radius:8px; padding:9px 11px; font-size:12px; resize:vertical; font-family:inherit; background:var(--bg); color:var(--text); line-height:1.6; min-height:120px; }
+.comment-ta:focus { outline:none; border-color:var(--accent); background:var(--white); }
+.save-btn { margin-top:12px; background:var(--accent); color:white; border:none; border-radius:8px; padding:8px 20px; font-size:12px; font-weight:500; cursor:pointer; }
+.save-btn:hover { opacity:.9; }
+.save-msg { margin-left:10px; font-size:11px; color:var(--green); display:none; }
+.pharm-name-link, .brand-name-link { cursor:pointer; color:var(--accent); text-decoration:none; font-weight:600; }
+.pharm-name-link:hover, .brand-name-link:hover { text-decoration:underline; }
+</style>
+</head>
+<body>
+<!-- ============================================================
+  ✅ DATA SECTION — 매주 이 부분만 업데이트하세요
+  ============================================================ -->
+<script>
+const D = {
+  // ── 기준 정보 ────────────────────────────────────────────
+  reportDate: "2026년 4월 28일",
+  reportWeek: "2026년 18주차",
+  baseNote: "기준: 출고기준(v+) | 1~3월 17주차 유지·4월 raw 13.44억 반영 | 공구 4/1~4/28",
+  latestMonth: 4,          // 확정 완료월
+  latestPartialMonth: 4,   // 진행중 월
+
+  // ── 섹션 1. 매출 현황 ─────────────────────────────────────
+  // 목표 단위: 만원
+  target: {
+    total:  [385000, 360000, 412000, 476000, 492000, 550000, 555000, 680000, 730000, 920000, 1100000, 840000],
+    health: [380000, 350000, 400000, 430000, 420000, 420000, 420000, 460000, 420000, 510000, 500000, 490000],
+    beauty: [0, 0, 1000, 3000, 6000, 20000, 40000, 100000, 150000, 200000, 300000, 180000],
+    global: [5000, 10000, 10000, 40000, 60000, 100000, 80000, 100000, 120000, 150000, 200000, 125000],
+    mcn:    [0, 0, 1000, 3000, 6000, 10000, 15000, 20000, 40000, 60000, 100000, 45000],
+  },
+  actual: {
+    total:  [433756, 406724, 380000, 134371, null, null, null, null, null, null, null, null],
+    health: [433464, 405372, 379115, 133372, null, null, null, null, null, null, null, null],
+    beauty: [293, 253, 885, 998, null, null, null, null, null, null, null, null],
+    global: [0, 1099, 0, 0, null, null, null, null, null, null, null, null],
+    mcn:    [0, 0, 0, 0, null, null, null, null, null, null, null, null],
+  },
+  // 전년 실적 (만원) — 2025년 월별
+  prev2025: [303656, 280040, 310121, 151193, 278721, 274301, 255950, 296271, 330897, 220548, 424625, 246530],
+  // 2026 YTD 목표/실적 (만원) — KPI용
+  ytd2026: {
+    targetQ1: 385000+360000+412000+476000,
+    actualQ1: 433756+406724+380000+134371,   // Q1+4월 = 135.5억 (1~3월 17주차 유지·4월 raw 13.44억)
+    prev2025Q1: 303656+280040+310121+151193, // 2025 동기간 = 104.5억
+  },
+
+  // ── 섹션 2-1. 채널별 출고 매출 ────────────────────────────
+  channel2026: {
+    스마트스토어: [116289, 94646, 83665, 61923, null, null, null, null, null, null, null, null],
+    친한스토어: [70884, 110953, 48675, 54665, null, null, null, null, null, null, null, null],
+    카카오톡스토어: [8782, 31590, 10297, 10019, null, null, null, null, null, null, null, null],
+    쿠팡: [6406, 4907, 5608, 5922, null, null, null, null, null, null, null, null],
+    시오레: [569, 451, 1166, 1032, null, null, null, null, null, null, null, null],
+  },
+  channel2025: {
+    스마트스토어: [40289, 48336, 44284, 35844, 45041, 32610, 35267, 51007, 96953, 46796, 99827, 82107],
+    친한스토어: [33, 1626, 10186, 18928, 8441, 14670, 11370, 21956, 22831, 43431, 40468, 27046],
+    카카오톡스토어: [154390, 84729, 97798, 76176, 48205, 39397, 43862, 58926, 14607, 20456, 20910, 9097],
+    쿠팡: [6913, 10621, 13837, 11381, 12580, 10436, 8358, 5843, 4440, 3853, 5085, 5360],
+  },
+
+  // ── 섹션 3-1. SKU 판매량 ──────────────────────────────────
+  // [품명, 재고수량(재고관리_Master 4/28기준), 1월, 2월, 3월, 4월, 발주비고]
+  sku: [
+    ["폴라초임계오메가3",                    13313,  8603,  6853, 10749,  7015, "2026-05-11 50,657개 입고예정"],
+    ["알래스카순수오메가31100",                   5,  9641,  9343,  2433,   125, "🔴 재고 5개 — 즉시 발주"],
+    ["마시는마그네슘200",                    8576,  6841,  1165,  8898,  1912, "5/12 6/05 12,300개 입고예정"],
+    ["이뮨빌베리",                         3882,  4939,  7606,  1952,  1289, "✅ 발주확정"],
+    ["액티브비큐텐",                        9020,  2957,  4955,  4189,  4462, "2026-06-19 10,000개 입고예정"],
+    ["트룰리알티지오메가3",                   12467,    22,  9918,  4400,  2234, ""],
+    ["마그듀오 K2",                      11178,  3554,  2658,  3498,  3879, "2026-06-24 10,000개 입고예정"],
+    ["파이토레드큐민",                       2057,  3566,  1591,  2811,  4263, "✅ 2026-05-22 5,000개 입고예정"],
+    ["썬비타민D3&K2",                     3168,  1684,  2476,  1601,  1220, "2026-05-08 10,000개 입고예정"],
+    ["프로바이오에스엘비",                     5417,  1608,  2160,  1605,  1613, "2026-06-24 6,000개 입고예정"],
+    ["D를담다츄어블2000IU",                 3785,  6887,     3,    43,  6278, "발주 5,000개 진행중"],
+    ["와일드알래스카오메가3미니",                 4110,  2130,   282,   227,  1206, ""],
+    ["유한혈당케어여주",                      6722,  4088,  2137,   317,   531, "2026-06-05 15,000개 입고예정"],
+    ["알래스카순수오메가3600미니",               9784,   201,  2124,  1982,   416, ""],
+    ["퓨어리포좀비타민C",                     4394,  2460,   851,   802,  1814, "✅ 2026-07-17 10,000개 입고예정"],
+    ["튼튼리포좀비타민C아연",                      0,  1908,  1144,   755,     2, "🔴 재고 0 | 발주 8,000개 (5월 11일 주차)"],
+    ["코랄칼마디 K2",                      7310,  1815,   945,  1038,   952, "2026-04-28 4,873개 입고예정"],
+    ["오큐클리어",                         2988,  1033,  1672,  1067,   901, "2026-06-19 5,000개 입고예정"],
+    ["풀스펙멀티비타민",                      1771,   584,  1354,  1420,   559, "2026-05-15 5,000개 입고예정"],
+    ["퓨어리포좀글루타치온",                    6497,   343,   740,  1481,   226, ""],
+    ["폴라초임계오메가3 밸류팩",                 5776,   674,  1062,    91,   696, ""],
+  ],
+
+  // ── 공구 실적 ─────────────────────────────────────────────
+  gonggu: {
+    // 15개월 확정 + 4월 누적(4/1~4/22): 25-01 ~ 26-03 확정, 26-04 집계중
+    monthly: [44.9, 46.5, 50.9, 56.7, 51.3, 43.3, 59.2, 56.1, 59.3, 55.2, 57.9, 59.9, 70.5, 65.8, 64.1, 66.13],
+    cancelRate: [4.62, 3.91, 4.33, 2.85, 3.95, 3.20, 3.62, 3.21, 2.41, 2.76, 2.84, 3.64, 4.57, 3.96, 3.86, 3.31],
+    // 2026 YTD 공구 합계 (Q1 확정 + 4월 부분)
+    ytd2026: 70.5+65.8+64.1+66.13,     // 266.5억 (4월 ~28일 누적)
+    ytd2025q1: 44.9+46.5+50.9,          // 142.3억 (2025 Q1)
+
+    // 약사별: [이름, 기수, 2026YTD(1~4월,억), Jan26, Feb26, Mar26, Apr(~28일), 취소율(%), 건당평균, 주력브랜드]
+    pharmacists: [
+      ["이종우","2기", 35.9, 10.1,  9.6, 11.9,  4.32, 0.6,  88384, "트루엔·아워뉴트리·유트리션"],
+      ["이평화","1기", 33.0,  9.1,  7.3,  8.3,  8.25, 2.4, 119776, "담백하루·트루엔·더좋은"],
+      ["김소정","1기", 25.4,  6.8,  6.1,  5.3,   7.2, 2.6, 117289, "담백하루·더좋은·저스트글로우"],
+      ["고신형","3기", 16.1,  4.6,  2.4,  5.1,  3.96, 4.2, 112298, "트루엔·저스트글로우·담백하루"],
+      ["심혜란","1기", 14.0,  3.9,  2.7,  3.7,  3.67, 1.0,  94184, "뉴트리션스탠다드·AWESOME·더좋은"],
+      ["박소윤","2기", 12.4,  3.9,  2.6,  2.2,  3.74, 2.5, 106592, "닥터체크·트루엔·나프라우드"],
+      ["남기헌","3기",  9.4,  2.3,  1.7,  2.8,  2.56, 2.3,  98031, "닥터체크·담백하루·트루엔"],
+      ["이수찬","1기",  8.5,  2.7,  1.8,  1.8,  2.19, 5.7, 140709, "트루엔·더리틀스·YDY"],
+      ["임별",  "1기",  8.0,  2.3,  2.9,  0.7,  2.11, 6.8, 110824, "트루엔·한독·더리틀스"],
+      ["정인지","2기",  6.0,  1.6,  1.0,  1.3,  2.09, 1.9, 115659, "YDY·아워뉴트리·저스트글로우"],
+      ["고상온","0기",  5.6,  0.0,  0.0,  2.0,  3.59, 4.0, 157196, "한독·파이토알엑스·일동헬스"],
+      ["최길문","4기",  5.4,  0.8,  1.0,  1.0,  2.63, 5.2, 124773, "저스트글로우·담백하루"],
+      ["우수빈","3기",  3.5,  0.0,  1.1,  0.9,  1.52, 1.5, 115400, "탑헬스비포락토·더좋은"],
+      ["손혜림","2기",  3.3,  0.5,  0.8,  0.0,  1.98, 2.0,  98455, "AWESOME·한독"],
+      ["임유미","2기",  2.6,  0.6,  0.2,  0.0,  1.76, 0.0, 127518, "한독·담백하루·더좋은"],
+    ],
+
+    // 브랜드별: [브랜드명, 2026YTD(억), Jan26, Feb26, Mar26, Apr(~28일), 취소율(%)]
+    brands: [
+      ["담백하루",             39.3, 11.4, 8.1, 8.1, 11.73, 0.0],
+      ["트루엔",               27.4,  8.9, 5.1, 8.4,   5.0, 6.0],
+      ["저스트 글로우",       18.6,  4.7, 3.7, 4.4,  5.76, 5.7],
+      ["뉴트리션 스탠다드",   18.4,  4.4, 5.0, 4.7,  4.33, 0.0],
+      ["YDY뉴트리션",       15.5,  4.2, 4.6, 1.8,  4.89, 5.4],
+      ["닥터체크",             15.0,  4.1, 3.9, 3.0,  3.99, 0.0],
+      ["한독",                 12.3,  2.7, 5.1, 2.0,  2.48, 5.7],
+      ["더리틀스",             11.8,  2.6, 2.9, 2.8,  3.46, 4.5],
+      ["아워뉴트리",            9.7,  3.0, 0.8, 2.9,  3.01, 0.0],
+      ["탑헬스 비포락토",      8.7,  2.5, 2.0, 2.5,  1.66, 3.9],
+      ["더좋은",                7.1,  2.1, 1.2, 2.3,  1.46, 6.6],
+      ["위타민",                5.8,  1.2, 1.0, 1.4,  2.17, 0.0],
+      ["AWESOME",        4.2,  0.8, 0.0, 0.8,  2.56, 0.0],
+      ["탑헬스 닥터라인",      1.7,  0.0, 0.0, 0.0,  1.67, 5.4],
+      ["파이토알엑스",          1.2,  0.0, 0.0, 0.0,  1.21, 7.5],
+    ],
+  },
+
+  // ── 상세 팝업 데이터 — 매주 업데이트 ──────────────────────
+  // 약사별 2025 동기간 Jan~Apr (억원)
+  detail: {
+    pharmPrev2025: {
+      "이종우": [6.3, 7.5, 9.6, 8.9],
+      "이평화": [5.4, 7.4, 8.4, 7.3],
+      "김소정": [10.0, 8.8, 5.7, 9.4],
+      "고신형": [0.0, 2.0, 1.3, 1.2],
+      "심혜란": [3.4, 4.0, 6.5, 2.1],
+      "남기헌": [0.0, 0.0, 0.0, 0.2],
+      "박소윤": [0.8, 1.9, 1.2, 3.7],
+      "이수찬": [1.6, 1.8, 3.1, 1.2],
+      "임별":   [1.2, 1.9, 3.2, 1.6],
+      "정인지": [1.8, 1.5, 1.3, 2.1],
+      "소윤":   [0.6, 0.3, 0.7, 1.2],
+      "임나현": [0.3, 0.4, 0.2, 0.9],
+      "우수빈": [0.4, 1.0, 0.7, 1.1],
+      "정혜윤": [0.0, 0.0, 0.0, 0.2],
+      "김미성": [1.8, 1.3, 0.3, 0.9],
+    },
+    // 브랜드별 2025 동기간 Jan~Apr (억원)
+    brandPrev2025: {
+      "담백하루":        [1.3, 8.8, 3.4, 8.1],
+      "트루엔":          [4.5, 4.5, 9.4, 3.2],
+      "뉴트리션 스탠다드":[0.0, 0.0, 0.0, 0.0],
+      "저스트 글로우":   [0.0, 0.0, 1.4, 2.3],
+      "닥터체크":        [2.7, 2.0, 1.6, 5.7],
+      "YDY뉴트리션":    [3.2, 4.0, 2.3, 2.3],
+      "한독":            [10.8, 4.9, 7.6, 5.7],
+      "더리틀스":        [1.4, 1.9, 2.3, 1.9],
+      "아워뉴트리":      [2.0, 4.3, 0.7, 8.0],
+      "더좋은":          [7.3, 6.9, 6.0, 4.5],
+      "파이토알엑스":    [1.9, 1.5, 1.8, 1.7],
+    },
+    // 약사별 브랜드 분포 (2026 Jan,Feb,Mar,Apr ~28일 · 억원)
+    pharmBrandBreakdown: {
+      "이종우": [
+        { name:"트루엔",    monthly:[2.1, 2.0, 2.5, 0.61] },
+        { name:"아워뉴트리", monthly:[2.0, 1.9, 2.4, 0.59] },
+        { name:"유트리션",  monthly:[1.8, 1.7, 2.1, 0.51] },
+        { name:"기타",      monthly:[4.2, 4.0, 4.9, 0.69] },
+      ],
+      "이평화": [
+        { name:"담백하루", monthly:[2.3, 1.8, 2.1, 1.89] },
+        { name:"트루엔",   monthly:[1.2, 1.0, 1.1, 0.72] },
+        { name:"더좋은",   monthly:[1.1, 0.9, 1.0, 0.63] },
+        { name:"기타",     monthly:[4.5, 3.6, 4.1, 3.36] },
+      ],
+      "김소정": [
+        { name:"담백하루", monthly:[1.9, 1.7, 1.5, 1.44] },
+        { name:"더좋은",   monthly:[1.2, 1.0, 0.9, 0.87] },
+        { name:"한독",     monthly:[0.8, 0.7, 0.6, 0.53] },
+        { name:"기타",     monthly:[2.9, 2.7, 2.3, 2.42] },
+      ],
+      "고신형": [
+        { name:"트루엔",      monthly:[1.5, 0.8, 1.7, 1.07] },
+        { name:"저스트 글로우",monthly:[0.8, 0.4, 0.9, 0.64] },
+        { name:"담백하루",    monthly:[0.6, 0.3, 0.6, 0.48] },
+        { name:"기타",        monthly:[1.7, 0.9, 1.9, 1.02] },
+      ],
+      "심혜란": [
+        { name:"뉴트리션 스탠다드", monthly:[0.6, 0.4, 0.6, 0.67] },
+        { name:"더좋은",            monthly:[0.5, 0.3, 0.4, 0.50] },
+        { name:"담백하루",          monthly:[0.5, 0.4, 0.5, 0.48] },
+        { name:"기타",              monthly:[2.3, 1.6, 2.2, 1.70] },
+      ],
+      "남기헌": [
+        { name:"닥터체크", monthly:[1.0, 0.7, 1.2, 0.94] },
+        { name:"담백하루", monthly:[0.5, 0.4, 0.6, 0.47] },
+        { name:"트루엔",   monthly:[0.3, 0.2, 0.4, 0.25] },
+        { name:"기타",     monthly:[0.5, 0.4, 0.6, 0.21] },
+      ],
+      "박소윤": [
+        { name:"닥터체크",  monthly:[2.0, 1.3, 1.1, 0.72] },
+        { name:"트루엔",    monthly:[0.4, 0.3, 0.2, 0.36] },
+        { name:"나프라우드", monthly:[0.4, 0.2, 0.2, 0.26] },
+        { name:"기타",      monthly:[1.1, 0.8, 0.7, 1.05] },
+      ],
+      "이수찬": [
+        { name:"트루엔",   monthly:[0.6, 0.4, 0.4, 0.30] },
+        { name:"더리틀스", monthly:[0.4, 0.3, 0.3, 0.22] },
+        { name:"YDY뉴트리션", monthly:[0.3, 0.2, 0.2, 0.17] },
+        { name:"기타",     monthly:[1.4, 0.9, 0.9, 0.80] },
+      ],
+      "임별": [
+        { name:"트루엔",   monthly:[0.6, 0.8, 0.2, 0.53] },
+        { name:"한독",     monthly:[0.3, 0.4, 0.1, 0.10] },
+        { name:"더리틀스", monthly:[0.3, 0.4, 0.1, 0.12] },
+        { name:"기타",     monthly:[1.1, 1.3, 0.3, 0.40] },
+      ],
+      "정인지": [
+        { name:"YDY뉴트리션", monthly:[0.3, 0.2, 0.3, 0.10] },
+        { name:"아워뉴트리",  monthly:[0.3, 0.2, 0.3, 0.10] },
+        { name:"저스트 글로우",monthly:[0.2, 0.2, 0.2, 0.08] },
+        { name:"기타",        monthly:[0.8, 0.4, 0.5, 0.24] },
+      ],
+      "소윤": [
+        { name:"담백하루",    monthly:[0.5, 0.6, 0.5, 0.16] },
+        { name:"저스트 글로우",monthly:[0.4, 0.5, 0.4, 0.14] },
+        { name:"기타",        monthly:[0.6, 0.6, 0.5, 0.18] },
+      ],
+      "임나현": [
+        { name:"더리틀스", monthly:[0.4, 0.3, 0.5, 0.18] },
+        { name:"담백하루", monthly:[0.3, 0.2, 0.4, 0.14] },
+        { name:"기타",     monthly:[0.2, 0.1, 0.4, 0.13] },
+      ],
+      "우수빈": [
+        { name:"탑헬스 비포락토", monthly:[0.0, 0.5, 0.4, 0.20] },
+        { name:"더좋은",          monthly:[0.0, 0.3, 0.3, 0.13] },
+        { name:"기타",            monthly:[0.0, 0.3, 0.2, 0.10] },
+      ],
+      "정혜윤": [
+        { name:"저스트 글로우",monthly:[0.3, 0.4, 0.4, 0.14] },
+        { name:"담백하루",    monthly:[0.3, 0.4, 0.4, 0.14] },
+        { name:"기타",        monthly:[0.2, 0.2, 0.2, 0.08] },
+      ],
+      "김미성": [
+        { name:"담백하루", monthly:[0.5, 0.4, 0.6, 0.11] },
+        { name:"닥터체크", monthly:[0.4, 0.3, 0.4, 0.10] },
+        { name:"저스트 글로우", monthly:[0.3, 0.3, 0.4, 0.07] },
+        { name:"기타",     monthly:[0.4, 0.3, 0.4, 0.07] },
+      ],
+    },
+    // 브랜드별 약사 분포 (2026 Jan,Feb,Mar,Apr일부 · 억원 · 추정치)
+    brandPharmBreakdown: {
+      "담백하루": [
+        { name:"이평화",  monthly:[2.3, 1.8, 2.1, 0.35] },
+        { name:"김소정",  monthly:[1.9, 1.7, 1.5, 0.48] },
+        { name:"임별",    monthly:[0.8, 0.5, 0.5, 0.10] },
+        { name:"고신형",  monthly:[0.6, 0.3, 0.6, 0.12] },
+        { name:"기타",    monthly:[5.7, 3.8, 3.4, 0.43] },
+      ],
+      "트루엔": [
+        { name:"이종우",  monthly:[2.1, 2.0, 2.5, 0.17] },
+        { name:"이평화",  monthly:[1.2, 1.0, 1.1, 0.18] },
+        { name:"고신형",  monthly:[1.5, 0.8, 1.7, 0.32] },
+        { name:"이수찬",  monthly:[0.6, 0.4, 0.4, 0.17] },
+        { name:"기타",    monthly:[3.5, 0.9, 2.7, 0.53] },
+      ],
+      "뉴트리션 스탠다드": [
+        { name:"심혜란",  monthly:[0.6, 0.4, 0.6, 0.14] },
+        { name:"기타",    monthly:[3.8, 4.6, 4.1, 0.93] },
+      ],
+      "저스트 글로우": [
+        { name:"고신형",  monthly:[0.8, 0.4, 0.9, 0.17] },
+        { name:"정인지",  monthly:[0.2, 0.2, 0.2, 0.08] },
+        { name:"정혜윤",  monthly:[0.3, 0.4, 0.4, 0.14] },
+        { name:"기타",    monthly:[3.4, 2.7, 2.9, 0.81] },
+      ],
+      "닥터체크": [
+        { name:"박소윤",  monthly:[2.0, 1.3, 1.1, 0.39] },
+        { name:"남기헌",  monthly:[1.0, 0.7, 1.2, 0.40] },
+        { name:"기타",    monthly:[1.1, 1.9, 0.7, -0.01] },
+      ],
+      "YDY뉴트리션": [
+        { name:"이종우",  monthly:[0.0, 0.0, 0.0, 0.00] },
+        { name:"정인지",  monthly:[0.3, 0.2, 0.3, 0.10] },
+        { name:"이수찬",  monthly:[0.3, 0.2, 0.2, 0.07] },
+        { name:"기타",    monthly:[3.6, 4.2, 1.3, 0.69] },
+      ],
+      "한독": [
+        { name:"김소정",  monthly:[0.8, 0.7, 0.6, 0.25] },
+        { name:"임별",    monthly:[0.3, 0.4, 0.1, 0.10] },
+        { name:"기타",    monthly:[1.6, 4.0, 1.3, 0.54] },
+      ],
+      "더리틀스": [
+        { name:"이수찬",  monthly:[0.4, 0.3, 0.3, 0.10] },
+        { name:"임별",    monthly:[0.3, 0.4, 0.1, 0.12] },
+        { name:"임나현",  monthly:[0.4, 0.3, 0.5, 0.18] },
+        { name:"기타",    monthly:[1.5, 1.9, 1.9, 0.63] },
+      ],
+      "아워뉴트리": [
+        { name:"이종우",  monthly:[2.0, 1.9, 2.4, 0.16] },
+        { name:"정인지",  monthly:[0.3, 0.2, 0.3, 0.10] },
+        { name:"기타",    monthly:[0.7, -1.3, 0.2, 0.40] },
+      ],
+      "더좋은": [
+        { name:"이평화",  monthly:[1.1, 0.9, 1.0, 0.17] },
+        { name:"김소정",  monthly:[1.2, 1.0, 0.9, 0.36] },
+        { name:"심혜란",  monthly:[0.5, 0.3, 0.4, 0.11] },
+        { name:"기타",    monthly:[-0.7, -0.9, 0.0, 0.35] },
+      ],
+    },
+    comments: {
+      "brand_AWESOME": { m1:"2월 0.0억 · 급락 (-100%). 1월(0.8억) → 2월 시즌 진입.", m2:"3월 0.8억 · 신규 진입. 누적 1~3월 1.6억.", m3:"4월(~28일) 2.56억 · 급등 (+220%). 중위 브랜드 · 취소율 0%. YTD 4.2억." },
+      "brand_YDY뉴트리션": { m1:"2월 4.6억 · 보합 (+10%). 1월(4.2억) → 2월 시즌 진입.", m2:"3월 1.8억 · 급락 (-61%). 누적 1~3월 10.6억.", m3:"4월(~28일) 4.89억 · 급등 (+172%). 상위 브랜드. YTD 15.5억." },
+      "brand_뉴트리션 스탠다드": { m1:"2월 5.0억 · 성장 (+14%). 1월(4.4억) → 2월 시즌 진입.", m2:"3월 4.7억 · 보합 (-6%). 누적 1~3월 14.1억.", m3:"4월(~28일) 4.33억 · 보합 (-8%). 상위 브랜드 · 취소율 0%. YTD 18.4억." },
+      "brand_닥터체크": { m1:"2월 3.9억 · 보합 (-5%). 1월(4.1억) → 2월 시즌 진입.", m2:"3월 3.0억 · 하락 (-23%). 누적 1~3월 11.0억.", m3:"4월(~28일) 3.99억 · 급등 (+33%). 상위 브랜드 · 취소율 0%. YTD 15.0억." },
+      "brand_담백하루": { m1:"2월 8.1억 · 하락 (-29%). 1월(11.4억) → 2월 시즌 진입.", m2:"3월 8.1억 · 보합 (+0%). 누적 1~3월 27.6억.", m3:"4월(~28일) 11.73억 · 급등 (+45%). TOP 브랜드 · 취소율 0%. YTD 39.3억." },
+      "brand_더리틀스": { m1:"2월 2.9억 · 성장 (+12%). 1월(2.6억) → 2월 시즌 진입.", m2:"3월 2.8억 · 보합 (-3%). 누적 1~3월 8.3억.", m3:"4월(~28일) 3.46억 · 성장 (+24%). 상위 브랜드. YTD 11.8억." },
+      "brand_더좋은": { m1:"2월 1.2억 · 급락 (-43%). 1월(2.1억) → 2월 시즌 진입.", m2:"3월 2.3억 · 급등 (+92%). 누적 1~3월 5.6억.", m3:"4월(~28일) 1.46억 · 급락 (-37%). 하위 브랜드 · 취소율 6.6%. YTD 7.1억." },
+      "brand_아워뉴트리": { m1:"2월 0.8억 · 급락 (-73%). 1월(3.0억) → 2월 시즌 진입.", m2:"3월 2.9억 · 급등 (+262%). 누적 1~3월 6.7억.", m3:"4월(~28일) 3.01억 · 보합 (+4%). 상위 브랜드 · 취소율 0%. YTD 9.7억." },
+      "brand_위타민": { m1:"2월 1.0억 · 하락 (-17%). 1월(1.2억) → 2월 시즌 진입.", m2:"3월 1.4억 · 급등 (+40%). 누적 1~3월 3.6억.", m3:"4월(~28일) 2.17억 · 급등 (+55%). 중위 브랜드 · 취소율 0%. YTD 5.8억." },
+      "brand_저스트 글로우": { m1:"2월 3.7억 · 하락 (-21%). 1월(4.7억) → 2월 시즌 진입.", m2:"3월 4.4억 · 성장 (+19%). 누적 1~3월 12.8억.", m3:"4월(~28일) 5.76억 · 급등 (+31%). TOP 브랜드. YTD 18.6억." },
+      "brand_탑헬스 닥터라인": { m1:"2월 0.0억 · 데이터 없음. 1월(0.0억) → 2월 시즌 진입.", m2:"3월 0.0억 · 데이터 없음. 누적 1~3월 0.0억.", m3:"4월(~28일) 1.67억 · 신규 진입. 중위 브랜드. YTD 1.7억." },
+      "brand_탑헬스 비포락토": { m1:"2월 2.0억 · 하락 (-20%). 1월(2.5억) → 2월 시즌 진입.", m2:"3월 2.5억 · 성장 (+25%). 누적 1~3월 7.0억.", m3:"4월(~28일) 1.66억 · 급락 (-34%). 중위 브랜드. YTD 8.7억." },
+      "brand_트루엔": { m1:"2월 5.1억 · 급락 (-43%). 1월(8.9억) → 2월 시즌 진입.", m2:"3월 8.4억 · 급등 (+65%). 누적 1~3월 22.4억.", m3:"4월(~28일) 5.0억 · 급락 (-40%). TOP 브랜드 · 취소율 6.0%. YTD 27.4억." },
+      "brand_파이토알엑스": { m1:"2월 0.0억 · 데이터 없음. 1월(0.0억) → 2월 시즌 진입.", m2:"3월 0.0억 · 데이터 없음. 누적 1~3월 0.0억.", m3:"4월(~28일) 1.21억 · 신규 진입. 하위 브랜드 · 취소율 7.5%. YTD 1.2억." },
+      "brand_한독": { m1:"2월 5.1억 · 급등 (+89%). 1월(2.7억) → 2월 시즌 진입.", m2:"3월 2.0억 · 급락 (-61%). 누적 1~3월 9.8억.", m3:"4월(~28일) 2.48억 · 성장 (+24%). 중위 브랜드. YTD 12.3억." },
+      "pharm_고상온": { m1:"2월 0.0억 · 데이터 없음. 1월(0.0억)에서 출발 후 흐름 점검.", m2:"3월 2.0억 · 신규 진입. 누적 1~3월 2.0억 추세.", m3:"4월(~28일) 3.59억 · 급등 (+80%). 안정 상위. YTD 5.6억." },
+      "pharm_고신형": { m1:"2월 2.4억 · 급락 (-48%). 1월(4.6억)에서 출발 후 흐름 점검.", m2:"3월 5.1억 · 급등 (+112%). 누적 1~3월 12.1억 추세.", m3:"4월(~28일) 3.96억 · 하락 (-22%). 안정 상위. YTD 16.1억." },
+      "pharm_김소정": { m1:"2월 6.1억 · 하락 (-10%). 1월(6.8억)에서 출발 후 흐름 점검.", m2:"3월 5.3억 · 하락 (-13%). 누적 1~3월 18.2억 추세.", m3:"4월(~28일) 7.2억 · 급등 (+36%). 상위권. YTD 25.4억." },
+      "pharm_남기헌": { m1:"2월 1.7억 · 하락 (-26%). 1월(2.3억)에서 출발 후 흐름 점검.", m2:"3월 2.8억 · 급등 (+65%). 누적 1~3월 6.8억 추세.", m3:"4월(~28일) 2.56억 · 보합 (-9%). 중위권. YTD 9.4억." },
+      "pharm_박소윤": { m1:"2월 2.6억 · 급락 (-33%). 1월(3.9억)에서 출발 후 흐름 점검.", m2:"3월 2.2억 · 하락 (-15%). 누적 1~3월 8.7억 추세.", m3:"4월(~28일) 3.74억 · 급등 (+70%). 안정 상위. YTD 12.4억." },
+      "pharm_손혜림": { m1:"2월 0.8억 · 급등 (+60%). 1월(0.5억)에서 출발 후 흐름 점검.", m2:"3월 0.0억 · 급락 (-100%). 누적 1~3월 1.3억 추세.", m3:"4월(~28일) 1.98억 · 신규 진입. 중위권 · 취소율 2.0% 안정. YTD 3.3억." },
+      "pharm_심혜란": { m1:"2월 2.7억 · 급락 (-31%). 1월(3.9억)에서 출발 후 흐름 점검.", m2:"3월 3.7억 · 급등 (+37%). 누적 1~3월 10.3억 추세.", m3:"4월(~28일) 3.67억 · 보합 (-1%). 안정 상위 · 취소율 1.0% 안정. YTD 14.0억." },
+      "pharm_우수빈": { m1:"2월 1.1억 · 신규 진입. 1월(0.0억)에서 출발 후 흐름 점검.", m2:"3월 0.9억 · 하락 (-18%). 누적 1~3월 2.0억 추세.", m3:"4월(~28일) 1.52억 · 급등 (+69%). 중위권 · 취소율 1.5% 안정. YTD 3.5억." },
+      "pharm_이수찬": { m1:"2월 1.8억 · 급락 (-33%). 1월(2.7억)에서 출발 후 흐름 점검.", m2:"3월 1.8억 · 보합 (+0%). 누적 1~3월 6.3억 추세.", m3:"4월(~28일) 2.19억 · 성장 (+22%). 중위권. YTD 8.5억." },
+      "pharm_이종우": { m1:"2월 9.6억 · 보합 (-5%). 1월(10.1억)에서 출발 후 흐름 점검.", m2:"3월 11.9억 · 성장 (+24%). 누적 1~3월 31.6억 추세.", m3:"4월(~28일) 4.32억 · 급락 (-64%). 안정 상위 · 취소율 0.6% 안정. YTD 35.9억." },
+      "pharm_이평화": { m1:"2월 7.3억 · 하락 (-20%). 1월(9.1억)에서 출발 후 흐름 점검.", m2:"3월 8.3억 · 성장 (+14%). 누적 1~3월 24.7억 추세.", m3:"4월(~28일) 8.25억 · 보합 (-1%). 상위권. YTD 33.0억." },
+      "pharm_임별": { m1:"2월 2.9억 · 성장 (+26%). 1월(2.3억)에서 출발 후 흐름 점검.", m2:"3월 0.7억 · 급락 (-76%). 누적 1~3월 5.9억 추세.", m3:"4월(~28일) 2.11억 · 급등 (+201%). 중위권. YTD 8.0억." },
+      "pharm_임유미": { m1:"2월 0.2억 · 급락 (-67%). 1월(0.6억)에서 출발 후 흐름 점검.", m2:"3월 0.0억 · 급락 (-100%). 누적 1~3월 0.8억 추세.", m3:"4월(~28일) 1.76억 · 신규 진입. 중위권 · 취소율 0.0% 안정. YTD 2.6억." },
+      "pharm_정인지": { m1:"2월 1.0억 · 급락 (-38%). 1월(1.6억)에서 출발 후 흐름 점검.", m2:"3월 1.3억 · 급등 (+30%). 누적 1~3월 3.9억 추세.", m3:"4월(~28일) 2.09억 · 급등 (+61%). 중위권 · 취소율 1.9% 안정. YTD 6.0억." },
+      "pharm_최길문": { m1:"2월 1.0억 · 성장 (+25%). 1월(0.8억)에서 출발 후 흐름 점검.", m2:"3월 1.0억 · 보합 (+0%). 누적 1~3월 2.8억 추세.", m3:"4월(~28일) 2.63억 · 급등 (+163%). 중위권. YTD 5.4억." },
+    }
+  },
+
+  // ── 판매 추이 알림 ────────────────────────────────────────────
+  productAlerts: [
+    { type: 'pos',   text: "D를담다 츄어블 2000IU — 4월 6,278개 (전월比 +14,500%) 급등 · 신규 공구 효과 지속" },
+    { type: 'pos',   text: "파이토 레드큐민 — 1월 3,566개 → 4월 4,263개 · 4개월 연속 안정 성장" },
+    { type: 'pos',   text: "마그듀오 K2 — 1~4월 누적 13,589개 · 월평균 3,400개로 상위권 유지" },
+    { type: 'neg',   text: "폴라초임계오메가3 — 3월 10,749개 → 4월 7,015개 (-34.7%) · 공구 일정 공백 가능성" },
+    { type: 'neg',   text: "트룰리알티지오메가3 — 3월 4,400개 → 4월 2,234개 (-49.2%) · 5월 공구 재개 필요" },
+    { type: 'issue',   text: "알래스카순수오메가3 1100 — 4월 125개 (전월比 -94.9%) · 재고 5개·단종 확정" },
+    { type: 'issue',   text: "튼튼리포좀비타민C아연 재고 0개 — 5월 11일주차 8,000개 입고 예정 · 공급 공백 진행중" },
+    { type: 'issue',   text: "퓨어리포좀글루타치온 — 4월 226개 (전월比 -84.7%) · 재고 6,497개 충분, 공구 일정 점검 필요" },
+  ],
+
+  // ── 약사 기준 알림 ────────────────────────────────────────────
+  pharmAlerts: [
+    { type: 'pos',   text: "이종우 약사(2기) 2026 YTD 35.9억 — 누적 1위 유지 · Q1 폭발적 견인" },
+    { type: 'pos',   text: "이평화 약사(1기) 4월 8.25억 — 4월 단월 1위 · 담백하루 단독 강세 지속" },
+    { type: 'pos',   text: "김소정 약사(1기) 4월 7.20억 — 3월(5.3억) 대비 +35.8% 회복 · YTD 3위" },
+    { type: 'neg',   text: "임별 약사(1기) 취소율 6.8% — 평균(3.5%) 대비 1.9배 · 2개월 연속 모니터링" },
+    { type: 'neg',   text: "이수찬 약사(1기) 취소율 5.7% — 트루엔·더리틀스 중심 취소 발생" },
+    { type: 'issue',   text: "정혜윤 약사(4기) 취소율 11.4% — 비정상 수준 · 즉시 원인 조사 필요" },
+    { type: 'issue',   text: "이재훈 약사(5.5기) 취소율 28.4% — 2개월 연속 비정상 · 공구 운영 재검토" },
+    { type: 'issue',   text: "이종우 약사(2기) 4월 4.32억 — 3월(11.9억) 대비 -63.7% 급락 · 5월 복귀 일정 확인" },
+  ],
+};
+</script>
+
+<!-- ============================================================ -->
+
+<div class="topbar">
+  <div class="logo"><div class="logo-dot"></div>파마브로스 Weekly Sync</div>
+  <div class="topbar-meta">
+    <span id="weekBadge" class="week-badge"></span>
+    <span>기준일:</span>
+    <span class="topbar-date" id="topDate"></span>
+    <span style="color:var(--border)">|</span>
+    <span id="baseNote" style="font-size:11px"></span>
+  </div>
+</div>
+
+<div class="page">
+<div class="content">
+
+  <!-- Alerts - 2 panel -->
+  <div id="alertSection" style="margin-top:20px"></div>
+
+  <!-- ── SECTION 1: KPI ── -->
+  <div class="sec-header">
+    <div class="sec-num">1</div>
+    <div class="sec-title">매출 현황</div>
+    <div class="sec-sub">목표 vs 실적 (2026년)</div>
+  </div>
+
+  <div class="kpi-grid" id="kpiGrid"></div>
+
+  <!-- ── SECTION 1-B: 월별 트렌드 ── -->
+  <div class="grid-3-1" style="margin-top:16px">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">월별 매출 추이 — 목표 vs 실적</span>
+        <span class="card-note" id="yoyLabel"></span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:220px"><canvas id="mainTrendChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">카테고리별 비중</span></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:180px"><canvas id="catPieChart"></canvas></div>
+        <div id="catLegend" style="margin-top:10px;font-size:11px;display:flex;flex-direction:column;gap:5px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 달성률 테이블 -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-header"><span class="card-title">카테고리별 목표/실적 달성률</span></div>
+    <div class="card-body" style="padding:0">
+      <table class="data-table" id="achieveTable">
+        <thead><tr>
+          <th>구분</th>
+          <th class="num">1월 목표</th><th class="num">1월 실적</th><th class="num">달성률</th>
+          <th class="num">2월 목표</th><th class="num">2월 실적</th><th class="num">달성률</th>
+          <th class="num">3월 목표</th><th class="num">3월 실적</th><th class="num">달성률</th>
+          <th class="num" style="color:var(--orange)">4월 목표</th><th class="num" style="color:var(--orange)">4월 실적</th><th class="num" style="color:var(--orange)">달성률</th>
+          <th class="num">연간 목표</th><th class="num">YTD 실적</th><th class="num">달성률</th>
+        </tr></thead>
+        <tbody id="achieveBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: 채널별 ── -->
+  <div class="sec-header">
+    <div class="sec-num">2</div>
+    <div class="sec-title">PB제품 채널별 출고 매출</div>
+    <div class="sec-sub">출고기준 (아워박스)</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-title">2026년 채널별 월별 추이</span></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:220px"><canvas id="channelChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">채널별 YoY (26' vs 25') — Jan-Apr 누적</span></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:220px"><canvas id="channelYoyChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: SKU 판매량 ── -->
+  <div class="sec-header">
+    <div class="sec-num">3</div>
+    <div class="sec-title">자사PB 월별 판매량</div>
+    <div class="sec-sub">건강기능식품 · 출고기준 · 판매량 내림차순</div>
+  </div>
+  <div class="grid-2-1">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">TOP 10 SKU 월별 판매량</span>
+        <span class="card-note">단위: 개</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:260px"><canvas id="skuChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">재고 위험 현황</span></div>
+      <div class="card-body" id="invStatus" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+  </div>
+
+  <!-- SKU 상세 테이블 -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-header">
+      <span class="card-title">전체 SKU 판매 현황</span>
+      <span class="card-note">재고 = 현재고 | 월별 판매량 기준</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      <table class="data-table">
+        <thead><tr>
+          <th style="width:30px">#</th>
+          <th>품명</th>
+          <th class="num">재고</th>
+          <th class="num">1월</th>
+          <th class="num">2월</th>
+          <th class="num">3월</th>
+          <th class="num" style="color:var(--orange)">4월</th>
+          <th class="num">Q1 합계</th>
+          <th class="num">월평균</th>
+          <th>추이</th>
+          <th>비고</th>
+        </tr></thead>
+        <tbody id="skuTableBody"></tbody>
+        <tfoot id="skuTableFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: 공구 ── -->
+  <div class="sec-header">
+    <div class="sec-num">4</div>
+    <div class="sec-title">공동구매 실적 (친한스토어 기반)</div>
+    <div class="sec-sub">주문_옵션 RAW 기준 · 실매출(취소 제외)</div>
+  </div>
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header"><span class="card-title">월별 공구 실매출 추이</span><span class="card-note">억원</span></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:200px"><canvas id="gongguChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">월별 취소율</span><span class="card-note">금액 기준</span></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:200px"><canvas id="cancelChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4-2: 약사별 실적 ── -->
+  <div class="grid-2-1" style="margin-top:16px">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">약사별 누적 공구 실매출 (TOP 15)</span>
+        <span class="card-note">2025.01 ~ 2026.03 · 억원</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:320px"><canvas id="pharmBarChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">기수별 실매출 비중</span></div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:200px"><canvas id="gisuPieChart"></canvas></div>
+        <div id="gisuLegend" style="margin-top:12px;font-size:11px;display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 약사별 상세 테이블 -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-header">
+      <span class="card-title">약사별 상세 실적</span>
+      <span class="card-note">공구 기준 · 실매출(취소 제외)</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      <table class="data-table">
+        <thead><tr>
+          <th>#</th><th>약사</th><th>기수</th>
+          <th class="num">2026 YTD</th>
+          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num" style="color:var(--orange)">4월(~28일)</th>
+          <th class="num">취소율</th><th class="num">건당 평균</th><th>주력 브랜드</th>
+        </tr></thead>
+        <tbody id="pharmTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4-3: 브랜드별 실적 ── -->
+  <div style="margin-top:16px" class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">브랜드별 누적 공구 실매출 (TOP 15)</span>
+        <span class="card-note">억원</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:340px"><canvas id="brandBarChart"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">브랜드별 Q1 월별 추이 (TOP 8)</span>
+        <span class="card-note">2026년 1~3월 · 억원</span>
+      </div>
+      <div class="card-body">
+        <div class="chart-wrap" style="height:300px"><canvas id="brandMonthChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 브랜드 상세 테이블 -->
+  <div class="card" style="margin-top:14px">
+    <div class="card-header">
+      <span class="card-title">브랜드별 상세 실적</span>
+      <span class="card-note">취소율 5% 이상 주의</span>
+    </div>
+    <div class="card-body" style="padding:0">
+      <table class="data-table">
+        <thead><tr>
+          <th>#</th><th>브랜드</th>
+          <th class="num">2026 YTD</th><th class="num">비중</th>
+          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
+          <th class="num" style="color:var(--orange)">4월(~28일)</th>
+          <th class="num">취소율</th><th>추이</th>
+        </tr></thead>
+        <tbody id="brandTableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Update guide -->
+  <div class="update-guide">
+    <h4>📋 매주 업데이트 가이드</h4>
+    <p>① 새 raw 파일을 Claude에 첨부하고 <code>"이 파일로 대시보드 업데이트해줘"</code> 라고 요청하면 숫자를 자동으로 교체해드립니다.<br>
+    ② 직접 수정 시: 이 HTML 파일을 에디터로 열고 상단 <code>DATA SECTION</code>의 수치만 변경 → 저장 후 브라우저로 열기.<br>
+    ③ 신규 월 입력 시: <code>actual</code> 배열의 <code>null</code> 자리에 실적값 입력. <code>latestMonth</code>도 +1 업데이트.</p>
+  </div>
+
+</div><!-- /content -->
+
+<footer>
+  <div>파마브로스 커머스팀 내부용 — 외부 배포 금지</div>
+  <div id="footerDate"></div>
+</footer>
+</div><!-- /page -->
+
+<script>
+// ── Helpers ──────────────────────────────────────────────────
+const W = n => n == null ? '-' : (n/1).toLocaleString('ko-KR');
+const WW = n => n == null ? '-' : (n/10000).toFixed(1).replace(/\B(?=(\d{3})+(?!\d))/g, ',') + '억';
+const WA = n => n == null ? '-' : (n/10000).toLocaleString('ko-KR', {maximumFractionDigits:1}) + '억';
+const PCT = (a, b) => b ? ((a/b)*100).toFixed(1) + '%' : '-';
+const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
+const M16 = ['25-01','25-02','25-03','25-04','25-05','25-06','25-07','25-08','25-09','25-10','25-11','25-12','26-01','26-02','26-03','26-04▼'];
+const M15 = M16.slice(0,15);
+
+// ── Meta ─────────────────────────────────────────────────────
+document.getElementById('topDate').textContent = D.reportDate;
+document.getElementById('weekBadge').textContent = D.reportWeek;
+document.getElementById('baseNote').textContent = D.baseNote;
+document.getElementById('footerDate').textContent = '생성: ' + D.reportDate;
+
+// ── Alerts (판매추이 + 약사기준) ─────────────────────────────
+const alertColors = {
+  pos:   { bg:'rgba(22,163,74,0.08)',  border:'rgba(22,163,74,0.25)',  icon:'▲', iconColor:'#16a34a', label:'긍정', labelBg:'rgba(22,163,74,0.15)', labelColor:'#16a34a' },
+  neg:   { bg:'rgba(220,38,38,0.07)',  border:'rgba(220,38,38,0.22)',  icon:'▼', iconColor:'#dc2626', label:'부정', labelBg:'rgba(220,38,38,0.12)', labelColor:'#dc2626' },
+  issue: { bg:'rgba(234,88,12,0.07)',  border:'rgba(234,88,12,0.22)',  icon:'!', iconColor:'#ea580c', label:'이슈', labelBg:'rgba(234,88,12,0.15)', labelColor:'#ea580c' },
+};
+
+function renderAlertPanel(title, icon, items) {
+  const rows = items.map(a => {
+    const c = alertColors[a.type];
+    return `<div style="display:flex;align-items:flex-start;gap:10px;padding:9px 12px;background:${c.bg};border:1px solid ${c.border};border-radius:8px">
+      <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${c.labelBg};color:${c.labelColor};white-space:nowrap;margin-top:1px">${c.label}</span>
+      <span style="font-size:12px;color:var(--text);line-height:1.5">${a.text}</span>
+    </div>`;
+  }).join('');
+  return `<div style="flex:1;min-width:0">
+    <div style="font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-family:'Inter',sans-serif;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+      <span>${icon}</span><span>${title}</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">${rows}</div>
+  </div>`;
+}
+
+document.getElementById('alertSection').innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+    ${renderAlertPanel('당사 제품 판매 추이', '📦', D.productAlerts)}
+    ${renderAlertPanel('공동구매 약사 기준 알림', '💊', D.pharmAlerts)}
+  </div>`;
+
+// ── KPI Cards (2026 YTD 기준) ────────────────────────────────
+const ytdShip26  = (D.ytd2026.actualQ1/10000).toFixed(1);   // 억
+const ytdShip25  = (D.ytd2026.prev2025Q1/10000).toFixed(1);
+const yoyShip    = ((D.ytd2026.actualQ1 - D.ytd2026.prev2025Q1)/D.ytd2026.prev2025Q1*100).toFixed(1);
+const ytdGong26  = D.gonggu.ytd2026.toFixed(1);
+const ytdGong25  = D.gonggu.ytd2025q1.toFixed(1);
+const yoyGong    = ((D.gonggu.ytd2026 - D.gonggu.ytd2025q1)/D.gonggu.ytd2025q1*100).toFixed(1);
+const ytdTotal26 = (D.ytd2026.actualQ1/10000 + D.gonggu.ytd2026).toFixed(1);
+const ytdAchieve = (D.ytd2026.actualQ1/D.ytd2026.targetQ1*100).toFixed(1);
+document.getElementById('yoyLabel').textContent = `26 vs 25 YoY — Q1+4월 출고 ${ytdShip26}억 vs 2025 ${ytdShip25}억 (${yoyShip}%) | 4월 출고 ${(D.actual.total[3]/10000).toFixed(2)}억 (PB최종)`;
+
+const kpis = [
+  { label: '2026 YTD 출고 (Q1+4월)', val: ytdShip26+'억', sub: `2025 동기간: ${ytdShip25}억`, delta: `<span class="up">▲ +${yoyShip}% YoY</span>`, color: 'blue' },
+  { label: '4월 자사PB 출고', val: (D.actual.total[D.latestPartialMonth-1]/10000).toFixed(2)+'억', sub: `건기 ${(D.actual.health[D.latestPartialMonth-1]/10000).toFixed(2)}억 + 뷰티 ${(D.actual.beauty[D.latestPartialMonth-1]/10000).toFixed(2)}억`, delta: `<span class="${(D.actual.total[D.latestPartialMonth-1]>D.prev2025[D.latestPartialMonth-1])?'up':'dn'}">전년 ${D.latestPartialMonth}월 ${(D.prev2025[D.latestPartialMonth-1]/10000).toFixed(1)}억 대비 ${(((D.actual.total[D.latestPartialMonth-1]-D.prev2025[D.latestPartialMonth-1])/D.prev2025[D.latestPartialMonth-1])*100).toFixed(1)}%</span>`, color: 'blue' },
+  { label: '2026 YTD 공구 (Q1+4월부분)', val: ytdGong26+'억', sub: `2025 Q1: ${ytdGong25}억`, delta: `<span class="up">▲ +${yoyGong}% YoY(Q1)</span>`, color: 'green' },
+  { label: '4월 공구 (1~28일)', val: D.gonggu.monthly[D.gonggu.monthly.length-1].toFixed(1)+'억', sub: `취소율 ${D.gonggu.cancelRate[D.gonggu.cancelRate.length-1]}% · 287,152박스`, delta: '<span style="color:var(--orange)">▶ 집계중</span>', color: 'orange' },
+  { label: '출고 Q1+4월 목표달성률', val: ytdAchieve+'%', sub: `목표 ${(D.ytd2026.targetQ1/10000).toFixed(1)}억 vs 실적 ${ytdShip26}억`, delta: `<span class="${parseFloat(ytdAchieve)>=100?'up':'dn'}">${parseFloat(ytdAchieve)>=100?'▲ 초과달성':'▼ 미달'}</span>`, color: parseFloat(ytdAchieve)>=100?'green':'red' },
+  { label: '2026 연간 목표', val: '750억', sub: `전 카테고리 합산`, delta: `<span class="neu">연간달성률 ${(D.ytd2026.actualQ1/750000000*100).toFixed(1)}%</span>`, color: 'purple' },
+];
+document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
+  <div class="kpi-card ${k.color}">
+    <div class="kpi-label">${k.label}</div>
+    <div class="kpi-value ${k.color}">${k.val}</div>
+    <div class="kpi-sub">${k.sub}</div>
+    ${k.delta ? `<div class="kpi-delta">${k.delta}</div>` : ''}
+  </div>`).join('');
+
+// ── Achievement Table ─────────────────────────────────────────
+const cats = [
+  { name: '합계', t: D.target.total, a: D.actual.total },
+  { name: '건강기능식품', t: D.target.health, a: D.actual.health },
+  { name: '화장품', t: D.target.beauty, a: D.actual.beauty },
+  { name: '해외', t: D.target.global, a: D.actual.global },
+  { name: 'MCN', t: D.target.mcn, a: D.actual.mcn },
+];
+const achClass = pct => {
+  if (!pct || pct === '-') return 'none';
+  const v = parseFloat(pct);
+  if (v >= 100) return 'over';
+  if (v >= 90) return 'meet';
+  return 'miss';
+};
+const annualTarget = cats.map(c => c.t.reduce((a,b)=>a+b,0));
+document.getElementById('achieveBody').innerHTML = cats.map((c,i) => {
+  const ytd = [0,1,2,3].reduce((s,m) => s + (c.a[m] || 0), 0);
+  const ytdT = [0,1,2,3].reduce((s,m) => s + c.t[m], 0);
+  const ytdPct = PCT(ytd, ytdT);
+  let row = `<tr>
+    <td style="font-weight:600">${c.name}</td>`;
+  for (let m = 0; m < 4; m++) {
+    const ap = c.a[m] != null ? PCT(c.a[m], c.t[m]) : '-';
+    const isApr = m === 3;
+    row += `<td class="num">${WA(c.t[m])}</td>
+    <td class="num">${c.a[m] != null ? WA(c.a[m]) : '-'}</td>
+    <td class="num"><span class="ach ${achClass(ap)}">${ap}</span></td>`;
+  }
+  row += `<td class="num">${WA(annualTarget[i])}</td>
+    <td class="num">${WA(ytd)}</td>
+    <td class="num"><span class="ach ${achClass(ytdPct)}">${ytdPct}</span></td>
+  </tr>`;
+  return row;
+}).join('');
+
+// ── Charts ───────────────────────────────────────────────────
+const BORDER = '#e4e7ed';
+const baseOpts = (yFmt) => ({
+  responsive: true, maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      callbacks: {
+        label: (ctx) => {
+          const v = ctx.parsed.y ?? ctx.parsed.x ?? ctx.parsed;
+          if (v == null || isNaN(v)) return ctx.dataset.label || '';
+          const fmt = (typeof v === 'number') ? v.toLocaleString('ko-KR', {maximumFractionDigits: 2}) + '억' : v;
+          return (ctx.dataset.label ? ctx.dataset.label + ': ' : '') + fmt;
+        }
+      }
+    }
+  },
+  scales: {
+    x: { grid: { color: BORDER }, ticks: { font: { size: 10 }, color: '#8b91a0', autoSkip: false, maxRotation: 0 } },
+    y: { grid: { color: BORDER }, ticks: { font: { size: 11 }, color: '#8b91a0', callback: yFmt } }
+  }
+});
+
+// Main trend chart
+const labels3m = ['1월','2월','3월'];
+new Chart(document.getElementById('mainTrendChart'), {
+  type: 'bar',
+  data: {
+    labels: MONTHS,
+    datasets: [
+      { type: 'line', label: '전년 실적', data: D.prev2025.map(v=>v/10000), borderColor: '#cbd5e1', borderDash: [4,3], pointRadius: 3, pointBackgroundColor: '#cbd5e1', tension: 0.3, order: 1 },
+      { label: '목표', data: D.target.total.map(v=>v/10000), backgroundColor: '#eff4ff', borderRadius: 4, order: 3 },
+      { label: '실적', data: D.actual.total.map(v=>v!=null?v/10000:null), backgroundColor: '#2563eb', borderRadius: 4, order: 2 },
+    ]
+  },
+  options: { ...baseOpts(v=>v+'억'), plugins: { legend: { display: true, position:'top', labels: { boxWidth:10, font:{size:11}, color:'#8b91a0' } } } }
+});
+
+// Cat pie
+const validCats = cats.filter(c=>{
+  const ytd = [0,1,2,3].reduce((s,m)=>s+(c.a[m]||0),0);
+  return ytd > 0 && c.name !== '합계';
+});
+const catColors = ['#2563eb','#16a34a','#ea580c','#7c3aed'];
+new Chart(document.getElementById('catPieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: validCats.map(c=>c.name),
+    datasets: [{ data: validCats.map(c=>[0,1,2,3].reduce((s,m)=>s+(c.a[m]||0),0)/10000), backgroundColor: catColors, borderWidth: 0 }]
+  },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, cutout:'62%' }
+});
+document.getElementById('catLegend').innerHTML = validCats.map((c,i)=>{
+  const ytd = [0,1,2,3].reduce((s,m)=>s+(c.a[m]||0),0)/10000;
+  const total = validCats.reduce((s,cc)=>s+[0,1,2,3].reduce((ss,m)=>ss+(cc.a[m]||0),0),0)/10000;
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:${catColors[i]};display:inline-block"></span>${c.name}</span><span style="font-weight:600">${ytd.toFixed(0)}억 <span style="color:var(--muted)">(${(ytd/total*100).toFixed(1)}%)</span></span></div>`;
+}).join('');
+
+// Channel chart
+const chColors = { 스마트스토어:'#2563eb', 친한스토어:'#16a34a', 카카오톡스토어:'#ea580c', 쿠팡:'#7c3aed', 시오레:'#db2777' };
+new Chart(document.getElementById('channelChart'), {
+  type: 'bar',
+  data: {
+    labels: MONTHS,
+    datasets: Object.entries(D.channel2026).map(([name, data])=>({ label: name, data: data.map(v=>v/10000), backgroundColor: chColors[name]+'cc', borderRadius: 3, stack: 'a' }))
+  },
+  options: { ...baseOpts(v=>v+'억'), plugins: { legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}} }, scales: { x:{stacked:true,grid:{color:BORDER},ticks:{font:{size:10},color:'#8b91a0',autoSkip:false,maxRotation:0}}, y:{stacked:true,grid:{color:BORDER},ticks:{callback:v=>v+'억',font:{size:11},color:'#8b91a0'}} } }
+});
+
+// Channel YoY
+const ch26Sum = Object.entries(D.channel2026).map(([name,data])=>({ name, v: [0,1,2,3].reduce((s,m)=>s+(data[m]||0),0)/10000 }));
+const ch25Sum = Object.fromEntries(Object.entries(D.channel2025).map(([name,data])=>[name,[0,1,2,3].reduce((s,m)=>s+(data[m]||0),0)/10000]));
+const yoyLabels = ch26Sum.filter(c=>c.name!=='시오레').map(c=>c.name);
+new Chart(document.getElementById('channelYoyChart'), {
+  type: 'bar',
+  data: {
+    labels: yoyLabels,
+    datasets: [
+      { label: '2025 Jan-Apr', data: yoyLabels.map(n=>(ch25Sum[n]||0).toFixed(1)), backgroundColor: '#e2e8f0', borderRadius: 4 },
+      { label: '2026 Jan-Apr', data: yoyLabels.map(n=>(ch26Sum.find(c=>c.name===n)?.v||0).toFixed(1)), backgroundColor: '#2563eb', borderRadius: 4 },
+    ]
+  },
+  options: { ...baseOpts(v=>v+'억'), plugins: { legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}} } }
+});
+
+// SKU bar chart (top 10)
+const top10 = D.sku.slice(0,10);
+new Chart(document.getElementById('skuChart'), {
+  type: 'bar',
+  data: {
+    labels: top10.map(r=>r[0].length>8?r[0].slice(0,8)+'…':r[0]),
+    datasets: [
+      { label: '1월', data: top10.map(r=>r[2]), backgroundColor: '#bfdbfe', borderRadius: 3, stack:'a' },
+      { label: '2월', data: top10.map(r=>r[3]), backgroundColor: '#60a5fa', borderRadius: 3, stack:'a' },
+      { label: '3월', data: top10.map(r=>r[4]), backgroundColor: '#2563eb', borderRadius: 3, stack:'a' },
+      { label: '4월', data: top10.map(r=>r[5]||0), backgroundColor: '#f97316', borderRadius: 3, stack:'a' },
+    ]
+  },
+  options: { ...baseOpts(v=>v.toLocaleString()), plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}}, scales:{x:{stacked:true,grid:{color:BORDER},ticks:{font:{size:10},color:'#8b91a0',maxRotation:30}},y:{stacked:true,grid:{color:BORDER},ticks:{color:'#8b91a0',font:{size:11}}}}}
+});
+
+// Inventory status
+const invBox = document.getElementById('invStatus');
+const lowInv = D.sku.filter(r => r[1] < 500 || r[6]);
+invBox.innerHTML = lowInv.length === 0
+  ? '<div style="color:var(--green);font-size:12px">✓ 재고 위험 품목 없음</div>'
+  : lowInv.map(r=>{
+    const avgSales = ((r[2]+r[3]+r[4]+r[5])/4).toFixed(0);
+    const weeksCov = r[1] > 0 ? (r[1] / (avgSales/4)).toFixed(1) : 0;
+    const level = r[1] < 200 ? 'low' : r[1] < 1000 ? 'warn' : 'safe';
+    const lvlLabel = level==='low' ? '🔴 위험' : '🟡 주의';
+    return `<div style="background:${level==='low'?'#fef2f2':'#fff7ed'};border-radius:8px;padding:10px 12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-weight:600;font-size:12px">${r[0]}</span>
+        <span style="font-size:11px;font-weight:700;color:${level==='low'?'#dc2626':'#ea580c'}">${lvlLabel}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:4px">현재고 <b style="color:var(--text)">${r[1].toLocaleString()}개</b> · 월평균 출고 <b>${Number(avgSales).toLocaleString()}개</b> · 약 <b>${weeksCov}주</b> 분량</div>
+      <div class="progress-wrap"><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(r[1]/3000*100,100)}%;background:${level==='low'?'#dc2626':'#ea580c'}"></div></div></div>
+    </div>`;
+  }).join('');
+
+// SKU table
+const skuBody = document.getElementById('skuTableBody');
+const skuFoot = document.getElementById('skuTableFoot');
+let totals = [0,0,0,0,0,0];
+skuBody.innerHTML = D.sku.map((r,i)=>{
+  const q1 = r[2]+r[3]+r[4];
+  const avg = ((q1+r[5])/4).toFixed(0);
+  const trend = r[5]>r[4] ? '▲' : r[5]<r[4] ? '▼' : r[4]>r[2] ? '↗' : r[4]<r[2] ? '↘' : '→';
+  const tColor = r[5]>r[4] ? 'var(--green)' : r[5]<r[4] ? 'var(--red)' : 'var(--muted)';
+  const invLevel = r[1] < 200 ? 'low' : r[1] < 1000 ? 'warn' : 'safe';
+  const invLabel = invLevel==='low' ? '🔴' : invLevel==='warn' ? '🟡' : '';
+  totals[0]+=r[1]; totals[1]+=r[2]; totals[2]+=r[3]; totals[3]+=r[4]; totals[4]+=r[5]||0; totals[5]+=q1;
+  return `<tr>
+    <td style="color:var(--muted);font-size:11px">${i+1}</td>
+    <td style="font-weight:500">${r[0]}</td>
+    <td class="num">${invLabel} ${r[1].toLocaleString()}</td>
+    <td class="num">${r[2].toLocaleString()}</td>
+    <td class="num">${r[3].toLocaleString()}</td>
+    <td class="num">${r[4].toLocaleString()}</td>
+    <td class="num" style="color:var(--orange);font-weight:600">${(r[5]||0).toLocaleString()}</td>
+    <td class="num" style="font-weight:600">${q1.toLocaleString()}</td>
+    <td class="num">${Number(avg).toLocaleString()}</td>
+    <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
+    <td style="font-size:11px;color:var(--orange)">${r[6]||''}</td>
+  </tr>`;
+}).join('');
+skuFoot.innerHTML = `<tr class="total-row">
+  <td colspan="2">합계</td>
+  <td class="num">${totals[0].toLocaleString()}</td>
+  <td class="num">${totals[1].toLocaleString()}</td>
+  <td class="num">${totals[2].toLocaleString()}</td>
+  <td class="num">${totals[3].toLocaleString()}</td>
+  <td class="num">${totals[4].toLocaleString()}</td>
+  <td class="num">${totals[5].toLocaleString()}</td>
+  <td class="num">${(totals[5]/4).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
+  <td colspan="2"></td>
+</tr>`;
+
+// Gonggu monthly — M16 포함 (4월 부분집계)
+new Chart(document.getElementById('gongguChart'), {
+  type: 'bar',
+  data: {
+    labels: M16,
+    datasets: [
+      { label: '2025', data: [...D.gonggu.monthly.slice(0,12), null,null,null,null], backgroundColor: '#bfdbfe', borderRadius: 3 },
+      { label: '2026(확정)', data: [null,null,null,null,null,null,null,null,null,null,null,null,...D.gonggu.monthly.slice(12,15),null], backgroundColor: '#2563eb', borderRadius: 3 },
+      { label: '4월(진행중)', data: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,D.gonggu.monthly[15]], backgroundColor: '#f97316', borderRadius: 3, borderWidth: 2, borderColor: '#ea580c' },
+    ]
+  },
+  options: { ...baseOpts(v=>v+'억'), plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}} }
+});
+
+// Cancel chart — M16
+new Chart(document.getElementById('cancelChart'), {
+  type: 'line',
+  data: {
+    labels: M16,
+    datasets: [{
+      data: D.gonggu.cancelRate,
+      borderColor: '#dc2626',
+      backgroundColor: 'rgba(220,38,38,0.06)',
+      fill: true, tension: 0.3, pointRadius: 4,
+      pointBackgroundColor: D.gonggu.cancelRate.map((v,i)=> i===15 ? '#f97316' : v>=5?'#dc2626':'#94a3b8')
+    }]
+  },
+  options: { ...baseOpts(v=>v+'%'), scales:{ x:{grid:{color:BORDER},ticks:{font:{size:10},color:'#8b91a0',autoSkip:false,maxRotation:0}}, y:{min:0,max:7,grid:{color:BORDER},ticks:{callback:v=>v+'%',font:{size:11},color:'#8b91a0'}} } }
+});
+
+// ── 약사별 차트 (2026 YTD 내림차순) ─────────────────────────
+const pharmSorted = [...D.gonggu.pharmacists].sort((a,b) => b[2] - a[2]);
+const pharmColors = ['#2563eb','#3b82f6','#60a5fa','#93c5fd','#16a34a','#22c55e','#4ade80','#86efac',
+  '#ea580c','#f97316','#fb923c','#7c3aed','#a855f7','#c084fc','#db2777'];
+
+new Chart(document.getElementById('pharmBarChart'), {
+  type: 'bar',
+  data: {
+    labels: pharmSorted.map(r=>r[0]),
+    datasets: [
+      { label: '1월', data: pharmSorted.map(r=>r[3]), backgroundColor: '#bfdbfe', borderRadius: 2, stack:'s' },
+      { label: '2월', data: pharmSorted.map(r=>r[4]), backgroundColor: '#60a5fa', borderRadius: 2, stack:'s' },
+      { label: '3월', data: pharmSorted.map(r=>r[5]), backgroundColor: '#2563eb', borderRadius: 2, stack:'s' },
+      { label: '4월(~28일)', data: pharmSorted.map(r=>r[6]), backgroundColor: '#f97316', borderRadius: 2, stack:'s' },
+    ]
+  },
+  options: {
+    indexAxis: 'y', responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: true, position:'top', labels:{boxWidth:8,font:{size:10},color:'#8b91a0'} } },
+    scales: {
+      x: { stacked:true, grid:{color:BORDER}, ticks:{callback:v=>v+'억',font:{size:10},color:'#8b91a0'} },
+      y: { stacked:true, grid:{display:false}, ticks:{font:{size:11},color:'#3b4252'} }
+    }
+  }
+});
+
+// 기수별 파이
+const gisuMap = {};
+pharmSorted.forEach(r => { gisuMap[r[1]] = (gisuMap[r[1]]||0) + r[2]; });
+const gisuEntries = Object.entries(gisuMap).sort((a,b)=>b[1]-a[1]);
+const gisuColors = ['#2563eb','#16a34a','#7c3aed','#ea580c','#db2777'];
+new Chart(document.getElementById('gisuPieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: gisuEntries.map(e=>e[0]),
+    datasets: [{ data: gisuEntries.map(e=>e[1].toFixed(1)), backgroundColor: gisuColors, borderWidth:0 }]
+  },
+  options: { responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, cutout:'60%' }
+});
+const totalPharm = gisuEntries.reduce((s,e)=>s+e[1],0);
+document.getElementById('gisuLegend').innerHTML = gisuEntries.map((e,i)=>`
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <span style="display:flex;align-items:center;gap:5px">
+      <span style="width:8px;height:8px;border-radius:2px;background:${gisuColors[i]};display:inline-block"></span>
+      ${e[0]}
+    </span>
+    <span style="font-weight:600">${e[1].toFixed(1)}억 <span style="color:var(--muted)">(${(e[1]/totalPharm*100).toFixed(1)}%)</span></span>
+  </div>`).join('');
+
+// 약사 테이블 — 2026 YTD 내림차순
+const gisuBadgeColor = { '1기':'b1','2기':'b2','3기':'b3','4기':'b4','0기':'b4','5기':'b55','5.5기':'b55' };
+document.getElementById('pharmTableBody').innerHTML = pharmSorted.map((r,i)=>{
+  const cancelClass = r[7] >= 6 ? 'dn' : r[7] >= 4 ? '' : 'up';
+  const trend = r[6]>r[3] ? '▲' : r[6]<r[3] ? '▼' : '→';
+  const tColor = r[6]>r[3]?'var(--green)':r[6]<r[3]?'var(--red)':'var(--muted)';
+  return `<tr>
+    <td style="color:var(--muted);font-size:11px">${i+1}</td>
+    <td style="font-weight:600"><span class="pharm-name-link" onclick="openPharmModal('${r[0]}')">${r[0]}</span></td>
+    <td><span class="badge ${gisuBadgeColor[r[1]]||'b4'}">${r[1]}</span></td>
+    <td class="num" style="font-weight:700">${r[2]}억</td>
+    <td class="num">${r[3]>0?r[3]+'억':'-'}</td>
+    <td class="num">${r[4]>0?r[4]+'억':'-'}</td>
+    <td class="num">${r[5]>0?r[5]+'억':'-'}</td>
+    <td class="num" style="color:var(--orange);font-weight:600">${r[6]>0?r[6]+'억':'집계중'}</td>
+    <td class="num"><span class="${cancelClass}" style="font-weight:600">${r[7]}%</span></td>
+    <td class="num">${r[8].toLocaleString()}원</td>
+    <td style="font-size:11px;color:var(--muted)">${r[9]}</td>
+  </tr>`;
+}).join('');
+
+// ── 브랜드별 차트 (2026 YTD 내림차순) ───────────────────────
+const brandSorted = [...D.gonggu.brands].sort((a,b) => b[1] - a[1]);
+const brandPalette = ['#1d4ed8','#2563eb','#3b82f6','#60a5fa','#93c5fd','#bfdbfe',
+  '#15803d','#16a34a','#22c55e','#4ade80','#86efac','#c084fc','#f97316','#fb923c','#fbbf24'];
+
+new Chart(document.getElementById('brandBarChart'), {
+  type: 'bar',
+  data: {
+    labels: brandSorted.map(r=>r[0]),
+    datasets: [
+      { label: '1~3월', data: brandSorted.map(r=>(r[2]+r[3]+r[4]).toFixed(1)), backgroundColor: brandPalette.map(c=>c+'99'), borderRadius: 3, stack:'s' },
+      { label: '4월(~28일)', data: brandSorted.map(r=>r[5]), backgroundColor: '#f97316', borderRadius: 3, stack:'s' },
+    ]
+  },
+  options: {
+    indexAxis: 'y', responsive:true, maintainAspectRatio:false,
+    plugins: { legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}, tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.x+'억'}} },
+    scales: {
+      x: { stacked:true, grid:{color:BORDER}, ticks:{callback:v=>v+'억',font:{size:10},color:'#8b91a0'} },
+      y: { stacked:true, grid:{display:false}, ticks:{font:{size:11},color:'#3b4252'} }
+    }
+  }
+});
+
+// 브랜드 Q1+4월 월별 (top 8, 2026 YTD 내림차순)
+const top8brands = brandSorted.slice(0,8);
+new Chart(document.getElementById('brandMonthChart'), {
+  type: 'bar',
+  data: {
+    labels: top8brands.map(r=>r[0].length>6?r[0].slice(0,6)+'…':r[0]),
+    datasets: [
+      { label: '1월', data: top8brands.map(r=>r[2]), backgroundColor: '#bfdbfe', borderRadius:3, stack:'s' },
+      { label: '2월', data: top8brands.map(r=>r[3]), backgroundColor: '#60a5fa', borderRadius:3, stack:'s' },
+      { label: '3월', data: top8brands.map(r=>r[4]), backgroundColor: '#2563eb', borderRadius:3, stack:'s' },
+      { label: '4월(~28일)', data: top8brands.map(r=>r[5]), backgroundColor: '#f97316', borderRadius:3, stack:'s' },
+    ]
+  },
+  options: {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}},
+    scales:{
+      x:{stacked:true,grid:{display:false},ticks:{font:{size:10},color:'#8b91a0',maxRotation:30}},
+      y:{stacked:true,grid:{color:BORDER},ticks:{callback:v=>v+'억',font:{size:11},color:'#8b91a0'}}
+    }
+  }
+});
+
+// 브랜드 테이블 — 2026 YTD 내림차순
+const totalBrand = brandSorted.reduce((s,r)=>s+r[1],0);
+document.getElementById('brandTableBody').innerHTML = brandSorted.map((r,i)=>{
+  const share = (r[1]/totalBrand*100).toFixed(1);
+  const trend = r[5]>r[2] ? '▲' : r[5]<r[2] ? '▼' : '→';
+  const tColor = r[5]>r[2]?'var(--green)':r[5]<r[2]?'var(--red)':'var(--muted)';
+  const cancelClass = r[6]>=6?'dn':r[6]>=3?'':'up';
+  const barW = Math.min((r[1]/D.gonggu.brands[0][1])*100,100).toFixed(0);
+  return `<tr>
+    <td style="color:var(--muted);font-size:11px">${i+1}</td>
+    <td>
+      <div style="font-weight:500"><span class="brand-name-link" onclick="openBrandModal('${r[0]}')">${r[0]}</span></div>
+      <div style="background:var(--border-light);border-radius:2px;height:3px;width:100%;margin-top:3px">
+        <div style="background:${brandPalette[i]||'#2563eb'};height:3px;border-radius:2px;width:${barW}%"></div>
+      </div>
+    </td>
+    <td class="num" style="font-weight:700">${r[1]}억</td>
+    <td class="num" style="color:var(--muted)">${share}%</td>
+    <td class="num">${r[2]>0?r[2]+'억':'-'}</td>
+    <td class="num">${r[3]>0?r[3]+'억':'-'}</td>
+    <td class="num">${r[4]>0?r[4]+'억':'-'}</td>
+    <td class="num" style="color:var(--orange);font-weight:600">${r[5]>0?r[5]+'억':'집계중'}</td>
+    <td class="num"><span class="${cancelClass}" style="font-weight:600">${r[6]>0?r[6]+'%':'-'}</span></td>
+    <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
+  </tr>`;
+}).join('');
+// ── Detail Modal Logic ───────────────────────────────────────
+let _mc = [];   // chart instances
+let _mKey = ''; // current modal key for comments
+let _cmts = {};
+try { _cmts = JSON.parse(localStorage.getItem('pbDashComments')||'{}'); } catch(e){}
+
+function _closeModal() {
+  document.getElementById('detailModal').style.display = 'none';
+  _mc.forEach(c => { try{c.destroy();}catch(e){} });
+  _mc = [];
+}
+document.addEventListener('keydown', e => { if(e.key==='Escape') _closeModal(); });
+
+function _switchTab(tab, el) {
+  document.querySelectorAll('#detailModal .tab-pane').forEach(p => p.classList.remove('act'));
+  document.querySelectorAll('#detailModal .modal-tab').forEach(t => t.classList.remove('act'));
+  document.getElementById('mTab_'+tab).classList.add('act');
+  el.classList.add('act');
+}
+
+function _saveComment() {
+  _cmts[_mKey] = {
+    m1: document.getElementById('mCmt1').value,
+    m2: document.getElementById('mCmt2').value,
+    m3: document.getElementById('mCmt3').value,
+  };
+  try { localStorage.setItem('pbDashComments', JSON.stringify(_cmts)); } catch(e){}
+  const s = document.getElementById('mSaveMsg');
+  s.style.display = 'inline';
+  setTimeout(() => s.style.display='none', 2000);
+}
+
+function _loadComments(key) {
+  // 1순위: 로컬 저장 편집본, 2순위: 데이터 코멘트 기본값
+  const saved = _cmts[key] || {};
+  const preset = (D.detail && D.detail.comments && D.detail.comments[key]) || {};
+  document.getElementById('mCmt1').value = saved.m1 !== undefined ? saved.m1 : (preset.m1 || '');
+  document.getElementById('mCmt2').value = saved.m2 !== undefined ? saved.m2 : (preset.m2 || '');
+  document.getElementById('mCmt3').value = saved.m3 !== undefined ? saved.m3 : (preset.m3 || '');
+}
+
+const _CHART_COLORS = ['#2563eb','#16a34a','#ea580c','#7c3aed','#f59e0b','#06b6d4','#ec4899','#84cc16'];
+const _GRID = '#e4e7ed';
+const _MLAB4 = ['1월','2월','3월','4월(~28일)'];
+
+function _makeTrendChart(canvasId, d26, d25) {
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const c = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: _MLAB4,
+      datasets:[
+        { label:'2025 동기간', data:d25, backgroundColor:'#e2e8f0', borderRadius:3 },
+        { label:'2026',       data:d26, backgroundColor:d26.map((_,i)=>i===3?'#f97316':'#2563eb'), borderRadius:3 },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}},
+      scales:{
+        x:{grid:{color:_GRID},ticks:{font:{size:11},color:'#8b91a0'}},
+        y:{grid:{color:_GRID},ticks:{callback:v=>v+'억',font:{size:11},color:'#8b91a0'}}
+      }
+    }
+  });
+  _mc.push(c);
+}
+
+function _makeStackChart(canvasId, breakdown) {
+  const ctx = document.getElementById(canvasId);
+  if(!ctx||!breakdown||!breakdown.length) return;
+  const filtered = breakdown.filter(b => b.monthly.some(v=>v>0));
+  const c = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: _MLAB4,
+      datasets: filtered.map((b,i) => ({
+        label: b.name,
+        data: b.monthly.map(v => Math.max(0,v)),
+        backgroundColor: _CHART_COLORS[i]||'#94a3b8',
+        borderRadius: 3,
+        stack: 's'
+      }))
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}},
+      scales:{
+        x:{stacked:true,grid:{color:_GRID},ticks:{font:{size:11},color:'#8b91a0'}},
+        y:{stacked:true,grid:{color:_GRID},ticks:{callback:v=>v+'억',font:{size:11},color:'#8b91a0'}}
+      }
+    }
+  });
+  _mc.push(c);
+}
+
+function _monthTable(d26, d25) {
+  const yoy = d26.map((v,i) => d25[i]>0 ? ((v-d25[i])/d25[i]*100).toFixed(1) : (v>0?'신규':'-'));
+  return `<table class="data-table" style="margin-top:14px">
+    <thead><tr>
+      <th>월</th>
+      <th class="num">2026 실적</th>
+      <th class="num">2025 동기간</th>
+      <th class="num">YoY</th>
+    </tr></thead>
+    <tbody>
+      ${_MLAB4.map((l,i) => `<tr>
+        <td>${l}${i===3?'<span style="font-size:10px;color:var(--orange);margin-left:4px">▼집계중</span>':''}</td>
+        <td class="num" style="font-weight:${i===3?400:600};color:${i===3?'var(--orange)':'var(--text)'}">${d26[i]>0?d26[i]+'억':'-'}</td>
+        <td class="num" style="color:var(--muted)">${d25[i]>0?d25[i]+'억':'-'}</td>
+        <td class="num"><span class="${parseFloat(yoy[i])>0?'up':parseFloat(yoy[i])<0?'dn':''}">${yoy[i]!=='-'&&yoy[i]!=='신규'?(parseFloat(yoy[i])>0?'+':'')+yoy[i]+'%':yoy[i]}</span></td>
+      </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+function _breakdownTable(breakdown) {
+  if(!breakdown||!breakdown.length) return '<div style="color:var(--muted);font-size:12px;padding:12px 0">세부 데이터를 D.detail에 추가해주세요.</div>';
+  const filtered = breakdown.filter(b => b.monthly.some(v=>v>0));
+  return `<table class="data-table" style="margin-top:14px">
+    <thead><tr>
+      <th>항목</th>
+      <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
+      <th class="num" style="color:var(--orange)">4월(~28일)</th>
+      <th class="num">2026 YTD</th>
+    </tr></thead>
+    <tbody>
+      ${filtered.map((b,i) => {
+        const tot = b.monthly.reduce((s,v)=>s+Math.max(0,v),0);
+        return `<tr>
+          <td style="display:flex;align-items:center;gap:6px">
+            <span style="width:8px;height:8px;border-radius:2px;background:${_CHART_COLORS[i]||'#94a3b8'};flex-shrink:0"></span>
+            <span style="font-weight:500">${b.name}</span>
+          </td>
+          ${b.monthly.map((v,j)=>`<td class="num" style="${j===3?'color:var(--orange)':''}">${v>0?v.toFixed(2)+'억':'-'}</td>`).join('')}
+          <td class="num" style="font-weight:700">${tot.toFixed(2)}억</td>
+        </tr>`;
+      }).join('')}
+    </tbody>
+  </table>`;
+}
+
+function openPharmModal(name) {
+  const p = D.gonggu.pharmacists.find(r=>r[0]===name);
+  if(!p) return;
+  _mKey = 'pharm_'+name;
+
+  const d26 = [p[3],p[4],p[5],p[6]];
+  const d25 = D.detail.pharmPrev2025[name] || [0,0,0,0];
+  const ytd25 = d25.reduce((s,v)=>s+v,0);
+  const yoyPct = ytd25>0 ? ((p[2]-ytd25)/ytd25*100).toFixed(1) : null;
+  const bestIdx = d26.indexOf(Math.max(...d26));
+
+  // header
+  document.getElementById('mTypeBadge').className = 'modal-type-badge modal-badge-pharm';
+  document.getElementById('mTypeBadge').textContent = '약사';
+  document.getElementById('mTitle').textContent = name + ' 약사 상세 실적';
+  document.getElementById('mSubtitle').textContent = p[1] + ' · 주력: ' + p[9];
+
+  // KPIs
+  document.getElementById('mKpiRow').innerHTML = `
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">2026 YTD</div>
+      <div class="modal-kpi-val" style="color:var(--accent)">${p[2]}억</div>
+      <div class="modal-kpi-delta">${yoyPct!==null?`<span class="${parseFloat(yoyPct)>=0?'up':'dn'}">${parseFloat(yoyPct)>=0?'▲':'▼'} ${Math.abs(yoyPct)}%</span> vs 2025 동기간`:'신규 약사'}</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">2025 동기간(Q1+4월)</div>
+      <div class="modal-kpi-val">${ytd25.toFixed(1)}억</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">Jan–Apr 2025</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">취소율</div>
+      <div class="modal-kpi-val" style="color:${p[7]>=6?'var(--red)':p[7]<=2?'var(--green)':'var(--orange)'}">${p[7]}%</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">전체 평균 3.9%</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">건당 평균</div>
+      <div class="modal-kpi-val" style="font-size:16px">${p[8].toLocaleString()}원</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">최고: ${_MLAB4[bestIdx]}</div>
+    </div>`;
+
+  // tab monthly
+  document.getElementById('mTrendWrap').innerHTML = '<div style="position:relative;height:220px"><canvas id="mTrendC"></canvas></div>';
+  _makeTrendChart('mTrendC', d26, d25);
+  document.getElementById('mMonthTable').innerHTML = _monthTable(d26, d25);
+
+  // tab detail
+  document.getElementById('mDetailTitle').textContent = '브랜드별 월별 실적 (2026, 추정치)';
+  document.getElementById('mDetailChartWrap').innerHTML = '<div style="position:relative;height:220px"><canvas id="mDetailC"></canvas></div>';
+  _makeStackChart('mDetailC', D.detail.pharmBrandBreakdown[name]);
+  document.getElementById('mDetailTable').innerHTML = _breakdownTable(D.detail.pharmBrandBreakdown[name]);
+
+  // comments
+  _loadComments(_mKey);
+  document.getElementById('mCmtLabel1').textContent = '2월 실적 코멘트';
+  document.getElementById('mCmtLabel2').textContent = '3월 실적 코멘트';
+  document.getElementById('mCmtLabel3').textContent = '4월(~28일) 진행 코멘트';
+
+  _showModal();
+}
+
+function openBrandModal(name) {
+  const b = D.gonggu.brands.find(r=>r[0]===name);
+  if(!b) return;
+  _mKey = 'brand_'+name;
+
+  const d26 = [b[2],b[3],b[4],b[5]];
+  const d25 = D.detail.brandPrev2025[name] || [0,0,0,0];
+  const ytd25 = d25.reduce((s,v)=>s+v,0);
+  const yoyPct = ytd25>0 ? ((b[1]-ytd25)/ytd25*100).toFixed(1) : null;
+
+  document.getElementById('mTypeBadge').className = 'modal-type-badge modal-badge-brand';
+  document.getElementById('mTypeBadge').textContent = '브랜드';
+  document.getElementById('mTitle').textContent = name;
+  document.getElementById('mSubtitle').textContent = '2026 YTD ' + b[1] + '억 · 취소율 ' + (b[6]||0) + '%';
+
+  document.getElementById('mKpiRow').innerHTML = `
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">2026 YTD</div>
+      <div class="modal-kpi-val" style="color:#7c3aed">${b[1]}억</div>
+      <div class="modal-kpi-delta">${yoyPct!==null?`<span class="${parseFloat(yoyPct)>=0?'up':'dn'}">${parseFloat(yoyPct)>=0?'▲':'▼'} ${Math.abs(yoyPct)}%</span> vs 2025 동기간`:'신규 브랜드'}</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">2025 동기간(Q1+4월)</div>
+      <div class="modal-kpi-val">${ytd25.toFixed(1)}억</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">Jan–Apr 2025</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">취소율</div>
+      <div class="modal-kpi-val" style="color:${b[6]>=6?'var(--red)':b[6]<=1?'var(--green)':'var(--orange)'}">${b[6]||0}%</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">전체 평균 3.9%</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">3월 → 전월 대비</div>
+      <div class="modal-kpi-val" style="color:${b[4]>=b[3]?'var(--green)':'var(--red)'}">${b[4]>=b[3]?'▲':'▼'} ${Math.abs(b[4]-b[3]).toFixed(1)}억</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">2월 ${b[3]}억 → 3월 ${b[4]}억</div>
+    </div>`;
+
+  document.getElementById('mTrendWrap').innerHTML = '<div style="position:relative;height:220px"><canvas id="mTrendC"></canvas></div>';
+  _makeTrendChart('mTrendC', d26, d25);
+  document.getElementById('mMonthTable').innerHTML = _monthTable(d26, d25);
+
+  document.getElementById('mDetailTitle').textContent = '약사별 월별 기여 (2026, 추정치)';
+  document.getElementById('mDetailChartWrap').innerHTML = '<div style="position:relative;height:220px"><canvas id="mDetailC"></canvas></div>';
+  _makeStackChart('mDetailC', D.detail.brandPharmBreakdown[name]);
+  document.getElementById('mDetailTable').innerHTML = _breakdownTable(D.detail.brandPharmBreakdown[name]);
+
+  _loadComments(_mKey);
+  document.getElementById('mCmtLabel1').textContent = '2월 실적 코멘트';
+  document.getElementById('mCmtLabel2').textContent = '3월 실적 코멘트';
+  document.getElementById('mCmtLabel3').textContent = '4월(~28일) 진행 코멘트';
+
+  _showModal();
+}
+
+function _showModal() {
+  // reset to first tab
+  document.querySelectorAll('#detailModal .tab-pane').forEach(p=>p.classList.remove('act'));
+  document.querySelectorAll('#detailModal .modal-tab').forEach(t=>t.classList.remove('act'));
+  document.getElementById('mTab_monthly').classList.add('act');
+  document.querySelector('#detailModal .modal-tab').classList.add('act');
+  document.getElementById('detailModal').style.display = 'block';
+  document.getElementById('detailModal').scrollTop = 0;
+}
+</script>
+
+<!-- ── Detail Modal HTML ── -->
+<div id="detailModal" class="modal-overlay" onclick="if(event.target===this)_closeModal()">
+  <div class="modal-panel">
+    <!-- Header -->
+    <div class="modal-head">
+      <div class="modal-head-left">
+        <span id="mTypeBadge" class="modal-type-badge modal-badge-pharm">약사</span>
+        <div>
+          <div class="modal-title" id="mTitle"></div>
+          <div class="modal-subtitle" id="mSubtitle"></div>
+        </div>
+      </div>
+      <button class="modal-close" onclick="_closeModal()">×</button>
+    </div>
+    <!-- KPI row -->
+    <div class="modal-kpi-row" id="mKpiRow"></div>
+    <!-- Tabs -->
+    <div class="modal-tabs">
+      <div class="modal-tab act" onclick="_switchTab('monthly',this)">월별 실적</div>
+      <div class="modal-tab" onclick="_switchTab('detail',this)">세부 분석</div>
+      <div class="modal-tab" onclick="_switchTab('comment',this)">코멘트</div>
+    </div>
+    <!-- Tab: 월별 실적 -->
+    <div class="tab-pane act modal-body" id="mTab_monthly">
+      <div class="modal-section-label">2026 월별 실적 vs 2025 동기간</div>
+      <div id="mTrendWrap"></div>
+      <div id="mMonthTable"></div>
+    </div>
+    <!-- Tab: 세부 분석 -->
+    <div class="tab-pane modal-body" id="mTab_detail">
+      <div class="modal-section-label" id="mDetailTitle"></div>
+      <div id="mDetailChartWrap"></div>
+      <div id="mDetailTable"></div>
+    </div>
+    <!-- Tab: 코멘트 -->
+    <div class="tab-pane modal-body" id="mTab_comment">
+      <div class="modal-section-label" style="margin-bottom:14px">직전 3개월 실적 코멘트</div>
+      <div class="comment-grid">
+        <div>
+          <div class="comment-month-label" id="mCmtLabel1">2월 실적 코멘트</div>
+          <textarea id="mCmt1" class="comment-ta" placeholder="특이사항, 공구 현황, 이슈 등..."></textarea>
+        </div>
+        <div>
+          <div class="comment-month-label" id="mCmtLabel2">3월 실적 코멘트</div>
+          <textarea id="mCmt2" class="comment-ta" placeholder="특이사항, 공구 현황, 이슈 등..."></textarea>
+        </div>
+        <div>
+          <div class="comment-month-label" id="mCmtLabel3">4월(~28일) 진행 코멘트</div>
+          <textarea id="mCmt3" class="comment-ta" placeholder="진행중인 공구, 예상 이슈 등..."></textarea>
+        </div>
+      </div>
+      <button class="save-btn" onclick="_saveComment()">저장</button>
+      <span id="mSaveMsg" class="save-msg">✓ 저장됨</span>
+    </div>
+  </div>
+</div>
+</body>
+</html>
