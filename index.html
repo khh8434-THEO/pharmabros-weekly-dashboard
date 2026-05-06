@@ -31,6 +31,30 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', sans-serif; font-size: 13px; line-height: 1.5; }
 
+
+/* ── Weekly horizontal swipe ── */
+.week-scroll { overflow-x: auto; overflow-y: hidden; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+.week-scroll::-webkit-scrollbar { height: 6px; }
+.week-scroll::-webkit-scrollbar-track { background: #f0f2f5; border-radius: 3px; }
+.week-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.week-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+.week-table { border-collapse: collapse; font-size: 11px; min-width: max-content; }
+.week-table th { padding: 6px 8px; background: #f8fafc; color: #6b7280; font-weight: 600; border-bottom: 1.5px solid var(--border); white-space: nowrap; text-align: right; }
+.week-table th:first-child, .week-table td:first-child { position: sticky; left: 0; background: #f8fafc; z-index: 2; text-align: left; padding-left: 12px; padding-right: 16px; box-shadow: 1px 0 0 var(--border); }
+.week-table td { padding: 6px 8px; border-bottom: 1px solid var(--border-light); white-space: nowrap; text-align: right; font-variant-numeric: tabular-nums; }
+.week-table .yoy { font-size: 10px; padding-left: 4px; }
+.week-table .yoy.up { color: var(--green); }
+.week-table .yoy.dn { color: var(--red); }
+.week-table .yoy.neu { color: var(--muted); }
+.week-table tr.hi td { background: rgba(37,99,235,0.04); }
+.week-cell-link { color: var(--accent); cursor: pointer; text-decoration: underline; }
+.week-cell-link:hover { color: #1d4ed8; }
+.week-mini-row { display: flex; gap: 4px; align-items: center; overflow-x: auto; padding: 4px 0; max-width: 280px; }
+.week-mini-row::-webkit-scrollbar { height: 4px; }
+.week-mini-row::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
+.week-mini-cell { font-size: 10px; padding: 2px 5px; background: var(--accent-bg); border-radius: 3px; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
+.week-mini-cell.hi { background: var(--accent); color: white; }
+
 /* ── Layout ── */
 .page { max-width: 1440px; margin: 0 auto; padding: 0 0 48px; }
 .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
@@ -290,6 +314,17 @@ const D = {
       ["탑헬스 닥터라인",      1.7,  0.0, 0.0, 0.0,  1.67, 5.4],
       ["파이토알엑스",          1.2,  0.0, 0.0, 0.0,  1.21, 7.5],
     ],
+  },
+
+
+  // ── 주간 데이터 (출고 raw 기준 SKU + 공구 CSV 기준 약사/브랜드) ──
+  weekly: {
+    skuMax: 18,        // 출고 raw 기준 (2026 1~18주)
+    gongguWeeks: [14, 15, 16, 17, 18],  // 공구 CSV 기준 (4월 14~18주만)
+    sku: {"폴라초임계오메가3": {"2025": [1432, 2561, 1353, 877, 5075, 4197, 1222, 1495, 1516, 1846, 1656, 1231, 2788, 2051, 1219, 526, 2020, 1931], "2026": [784, 1478, 1999, 2767, 1911, 2636, 1466, 1181, 1449, 2342, 1573, 2298, 3995, 1146, 1906, 969, 2982, 338]}, "알래스카순수오메가31100": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [96, 115, 112, 5967, 3987, 298, 65, 66, 9663, 1021, 1, 7, 5, 73, 65, 1, 0, 0]}, "마시는마그네슘200": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 0, 2, 0], "2026": [84, 117, 2605, 3879, 182, 103, 202, 803, 31, 0, 2578, 415, 5019, 2046, 291, 230, 193, 38]}, "이뮨빌베리": {"2025": [288, 1896, 1649, 2773, 3979, 668, 1097, 443, 206, 723, 1489, 239, 196, 1630, 748, 2106, 1105, 155], "2026": [552, 198, 113, 481, 4682, 3242, 49, 206, 3286, 1191, 43, 119, 190, 282, 237, 361, 546, 8]}, "액티브비큐텐": {"2025": [805, 399, 287, 2108, 1224, 1651, 1071, 413, 600, 710, 592, 647, 507, 1123, 818, 545, 4050, 602], "2026": [404, 775, 590, 639, 664, 1386, 1865, 963, 718, 1037, 667, 1236, 980, 895, 883, 589, 2022, 250]}, "트룰리알티지오메가3": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [2, 10, 7, 0, 4, 35, 3739, 6010, 140, 38, 23, 33, 3830, 2293, 362, 18, 25, 5]}, "마그듀오 K2": {"2025": [445, 926, 431, 413, 532, 780, 664, 619, 645, 1045, 1173, 899, 1137, 723, 1008, 583, 693, 667], "2026": [281, 1235, 797, 744, 617, 1073, 591, 447, 517, 900, 629, 756, 913, 1166, 737, 743, 854, 589]}, "파이토레드큐민": {"2025": [149, 767, 178, 1095, 268, 261, 235, 247, 1185, 199, 526, 383, 1030, 509, 319, 494, 1319, 369], "2026": [219, 318, 364, 1960, 766, 258, 195, 457, 721, 803, 244, 823, 716, 303, 1680, 1295, 1055, 54]}, "썬비타민D3&K2": {"2025": [17, 337, 273, 78, 57, 66, 1332, 1545, 811, 88, 59, 74, 58, 74, 76, 61, 105, 79], "2026": [110, 175, 126, 123, 1223, 301, 502, 135, 1685, 629, 145, 371, 181, 180, 177, 334, 168, 416]}, "프로바이오에스엘비": {"2025": [139, 191, 433, 64, 104, 468, 326, 118, 550, 243, 270, 904, 391, 301, 702, 386, 400, 232], "2026": [306, 537, 200, 231, 413, 412, 285, 704, 754, 324, 212, 331, 468, 378, 348, 723, 327, 33]}, "D를담다츄어블2000IU": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [0, 0, 0, 0, 6887, 0, 3, 0, 0, 0, 0, 1, 0, 53, 5483, 595, 150, 39]}, "와일드알래스카오메가3미니": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [936, 1063, 47, 50, 47, 145, 48, 45, 34, 72, 44, 38, 46, 497, 388, 150, 117, 78]}, "유한혈당케어여주": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [2717, 978, 77, 163, 156, 1256, 734, 84, 64, 68, 54, 76, 97, 56, 91, 122, 180, 100]}, "알래스카순수오메가3600미니": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [40, 69, 33, 35, 33, 27, 40, 67, 2318, 1167, 146, 160, 135, 95, 63, 130, 141, 24]}, "퓨어리포좀비타민C": {"2025": [154, 2150, 197, 134, 2848, 108, 129, 154, 134, 166, 169, 1365, 871, 225, 1216, 156, 225, 234], "2026": [362, 544, 700, 746, 142, 587, 94, 93, 63, 147, 103, 95, 415, 1057, 457, 90, 200, 32]}, "튼튼리포좀비타민C아연": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [0, 0, 0, 0, 2236, 770, 11, 35, 0, 730, 1, 1, 13, 12, 0, 0, 0, 0]}, "코랄칼마디 K2": {"2025": [81, 151, 111, 140, 75, 1571, 168, 185, 172, 117, 142, 130, 109, 119, 305, 135, 182, 180], "2026": [103, 1274, 277, 159, 2, 279, 130, 225, 337, 143, 240, 172, 257, 556, 205, 135, 212, 44]}, "오큐클리어": {"2025": [86, 673, 0, 15, 6, 0, 1557, 326, 427, 384, 495, 486, 378, 218, 625, 359, 241, 222], "2026": [144, 230, 229, 173, 320, 846, 369, 237, 199, 178, 247, 302, 270, 180, 175, 324, 220, 30]}, "풀스펙멀티비타민": {"2025": [69, 73, 55, 72, 307, 59, 1033, 87, 92, 73, 1078, 92, 66, 92, 63, 45, 93, 112], "2026": [54, 175, 100, 99, 181, 161, 97, 761, 332, 155, 618, 465, 133, 170, 110, 118, 150, 38]}, "퓨어리포좀글루타치온": {"2025": [45, 72, 44, 47, 61, 1127, 628, 46, 89, 116, 98, 225, 186, 593, 142, 78, 800, 92], "2026": [55, 38, 28, 140, 105, 79, 134, 217, 381, 129, 109, 479, 650, 78, 50, 31, 80, 7]}, "폴라초임계오메가3 밸류팩": {"2025": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "2026": [3, 6, 1, 418, 325, 789, 192, 0, 2, 33, 1, 2, 9, 157, 36, 11, 506, 32]}},
+    pharmGonggu: {"이종우": [0.45, 0.81, 0.99, 0.9, 1.16], "이평화": [0.86, 1.66, 3.07, 2.39, 0.27], "김소정": [1.11, 1.81, 0.78, 3.14, 0.36], "심혜란": [0.62, 0.73, 1.76, 0.55, 0.01], "고신형": [0.61, 1.26, 1.17, 0.72, 0.2], "고상온": [0.06, 0.01, 0.89, 2.44, 0.19], "박소윤": [0.25, 1.34, 0.49, 1.38, 0.28], "정인지": [0.37, 0.42, 0.83, 0.31, 0.16], "남기헌": [0.71, 0.56, 0.39, 0.68, 0.22], "임별": [0.49, 0.61, 0.69, 0.24, 0.07], "최길문": [0.13, 0.31, 0.67, 1.33, 0.19], "임유미": [0.0, 0.0, 1.62, 0.13, 0.0], "이수찬": [0.57, 0.46, 0.24, 0.7, 0.22], "우수빈": [0.02, 1.06, 0.19, 0.03, 0.22], "손혜림": [0.21, 0.13, 0.29, 1.32, 0.04]},
+    brandGonggu: {"담백하루": [0.69, 2.04, 3.06, 5.44, 0.5], "트루엔": [0.63, 1.79, 1.02, 1.19, 0.37], "저스트 글로우": [0.76, 1.4, 1.15, 2.27, 0.19], "YDY뉴트리션": [0.48, 0.69, 1.12, 2.27, 0.32], "뉴트리션 스탠다드": [0.44, 1.22, 1.34, 0.28, 1.04], "아워뉴트리": [0.44, 0.57, 1.36, 0.61, 0.03], "닥터체크": [0.17, 1.13, 0.95, 1.4, 0.34], "더리틀스": [0.83, 0.81, 0.37, 1.19, 0.26], "위타민": [0.1, 0.03, 1.79, 0.15, 0.1], "AWESOME": [0.0, 0.0, 1.5, 0.99, 0.07], "한독": [0.08, 1.28, 0.5, 0.45, 0.18], "더좋은": [0.68, 0.5, 0.24, 0.01, 0.03], "탑헬스 닥터라인": [0.24, 0.67, 0.51, 0.21, 0.04], "탑헬스 비포락토": [0.4, 0.35, 0.35, 0.37, 0.19], "파이토알엑스": [0.86, 0.19, 0.05, 0.11, 0.0]},
+    totalGonggu: [8.86, 15.31, 17.63, 19.74, 4.6],
   },
 
   // ── 상세 팝업 데이터 — 매주 업데이트 ──────────────────────
@@ -724,7 +759,7 @@ const D = {
           <th>#</th><th>약사</th><th>기수</th>
           <th class="num">2026 YTD</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num" style="color:var(--orange)">4월(~28일)</th>
-          <th class="num">취소율</th><th class="num">건당 평균</th><th>주력 브랜드</th>
+          <th class="num" style="min-width:200px">주간실적 (14~18주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
         </tr></thead>
         <tbody id="pharmTableBody"></tbody>
       </table>
@@ -766,7 +801,7 @@ const D = {
           <th class="num">2026 YTD</th><th class="num">비중</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
           <th class="num" style="color:var(--orange)">4월(~28일)</th>
-          <th class="num">취소율</th><th>추이</th>
+          <th class="num" style="min-width:200px">주간실적 (14~18주)</th><th>추이</th>
         </tr></thead>
         <tbody id="brandTableBody"></tbody>
       </table>
@@ -1032,7 +1067,7 @@ skuBody.innerHTML = D.sku.map((r,i)=>{
   totals[0]+=r[1]; totals[1]+=r[2]; totals[2]+=r[3]; totals[3]+=r[4]; totals[4]+=r[5]||0; totals[5]+=q1;
   return `<tr>
     <td style="color:var(--muted);font-size:11px">${i+1}</td>
-    <td style="font-weight:500">${r[0]}</td>
+    <td style="font-weight:500"><span class="pharm-name-link" onclick="openSkuModal('${r[0]}')">${r[0]}</span></td>
     <td class="num">${invLabel} ${r[1].toLocaleString()}</td>
     <td class="num">${r[2].toLocaleString()}</td>
     <td class="num">${r[3].toLocaleString()}</td>
@@ -1150,7 +1185,7 @@ document.getElementById('pharmTableBody').innerHTML = pharmSorted.map((r,i)=>{
     <td class="num">${r[4]>0?r[4]+'억':'-'}</td>
     <td class="num">${r[5]>0?r[5]+'억':'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[6]>0?r[6]+'억':'집계중'}</td>
-    <td class="num"><span class="${cancelClass}" style="font-weight:600">${r[7]}%</span></td>
+    <td><div class="week-mini-row">${(D.weekly.pharmGonggu[r[0]]||[]).map((v,wi)=>`<div class="week-mini-cell ${wi===4?'hi':''}" title="${D.weekly.gongguWeeks[wi]}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${(D.weekly.pharmGonggu[r[0]]||[]).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td class="num">${r[8].toLocaleString()}원</td>
     <td style="font-size:11px;color:var(--muted)">${r[9]}</td>
   </tr>`;
@@ -1225,7 +1260,7 @@ document.getElementById('brandTableBody').innerHTML = brandSorted.map((r,i)=>{
     <td class="num">${r[3]>0?r[3]+'억':'-'}</td>
     <td class="num">${r[4]>0?r[4]+'억':'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[5]>0?r[5]+'억':'집계중'}</td>
-    <td class="num"><span class="${cancelClass}" style="font-weight:600">${r[6]>0?r[6]+'%':'-'}</span></td>
+    <td><div class="week-mini-row">${(D.weekly.brandGonggu[r[0]]||[]).map((v,wi)=>`<div class="week-mini-cell ${wi===4?'hi':''}" title="${D.weekly.gongguWeeks[wi]}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${(D.weekly.brandGonggu[r[0]]||[]).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
   </tr>`;
 }).join('');
@@ -1372,6 +1407,201 @@ function _breakdownTable(breakdown) {
   </table>`;
 }
 
+// ─── Weekly helpers ────────────────────────────────────────────────
+function _yoyClass(v){ return v>0?'up':v<0?'dn':'neu'; }
+function _yoyArrow(v){ return v>0?'▲':v<0?'▼':'·'; }
+
+function _weekTable(label2026, label2025, weeks, d2026, d2025, unit) {
+  unit = unit || '억';
+  let h = '<table class="week-table"><thead><tr><th>주차</th>';
+  for(const w of weeks) h += `<th>${w}주</th>`;
+  h += '<th style="background:#f1f5f9;color:#1a1d23">합계</th></tr></thead><tbody>';
+  // 2025 row
+  h += `<tr><td>${label2025}</td>`;
+  let s25 = 0;
+  for(let i=0;i<weeks.length;i++){ const v=d2025[i]||0; s25+=v; h+=`<td>${v?v.toLocaleString('ko-KR',{maximumFractionDigits:2}):'-'}</td>`; }
+  h += `<td style="background:#f1f5f9;font-weight:600">${s25.toLocaleString('ko-KR',{maximumFractionDigits:2})}</td></tr>`;
+  // 2026 row
+  h += `<tr class="hi"><td>${label2026}</td>`;
+  let s26 = 0;
+  for(let i=0;i<weeks.length;i++){ const v=d2026[i]||0; s26+=v; h+=`<td style="font-weight:600;color:#2563eb">${v?v.toLocaleString('ko-KR',{maximumFractionDigits:2}):'-'}</td>`; }
+  h += `<td style="background:#dbeafe;font-weight:700;color:#1d4ed8">${s26.toLocaleString('ko-KR',{maximumFractionDigits:2})}</td></tr>`;
+  // YoY row
+  h += `<tr><td style="color:var(--muted);font-size:10px">YoY</td>`;
+  for(let i=0;i<weeks.length;i++){
+    const a=d2026[i]||0, b=d2025[i]||0;
+    if(b===0){ h+=`<td><span class="yoy neu">-</span></td>`; }
+    else { const p=(a-b)/b*100; h+=`<td><span class="yoy ${_yoyClass(p)}">${_yoyArrow(p)}${Math.abs(p).toFixed(0)}%</span></td>`; }
+  }
+  if(s25===0){ h+=`<td>-</td>`; } else { const tp=(s26-s25)/s25*100; h+=`<td style="background:#f1f5f9"><span class="yoy ${_yoyClass(tp)}">${_yoyArrow(tp)}${Math.abs(tp).toFixed(0)}%</span></td>`; }
+  h += '</tr></tbody></table>';
+  return h;
+}
+
+function _weekChart(canvasId, weeks, d2026, d2025) {
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const c = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: weeks.map(w=>w+'주'),
+      datasets:[
+        { label:'2025', data:d2025, backgroundColor:'#e2e8f0', borderRadius:2 },
+        { label:'2026', data:d2026, backgroundColor:'#2563eb', borderRadius:2 },
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}},
+      scales:{
+        x:{grid:{display:false},ticks:{font:{size:9},color:'#8b91a0',autoSkip:false,maxRotation:45}},
+        y:{grid:{color:_GRID},ticks:{callback:v=>v,font:{size:10},color:'#8b91a0'}}
+      }
+    }
+  });
+  _mc.push(c);
+}
+
+function _autoComment(typeLbl, name, d2026, d2025, unit) {
+  unit = unit || '억';
+  const cur26 = d2026[d2026.length-1]||0;
+  const prev26 = d2026[d2026.length-2]||0;
+  const cur25 = d2025[d2025.length-1]||0;
+  const sum26 = d2026.reduce((s,v)=>s+(v||0),0);
+  const sum25 = d2025.reduce((s,v)=>s+(v||0),0);
+  const wow = prev26>0 ? ((cur26-prev26)/prev26*100) : null;
+  const yoy = cur25>0 ? ((cur26-cur25)/cur25*100) : null;
+  const sumYoy = sum25>0 ? ((sum26-sum25)/sum25*100) : null;
+  const isUp = sum26 > sum25;
+  let parts = [];
+  parts.push(`${typeLbl} ${name} — 직전주 ${cur26.toLocaleString('ko-KR',{maximumFractionDigits:2})}${unit}.`);
+  if(wow!==null) parts.push(`전주 대비 ${wow>=0?'+':''}${wow.toFixed(0)}%${Math.abs(wow)>=20?' ('+(wow>=0?'급등':'급락')+')':''}.`);
+  if(yoy!==null) parts.push(`전년 동주 ${cur25.toFixed(2)}${unit} 대비 ${yoy>=0?'+':''}${yoy.toFixed(0)}%.`);
+  if(sumYoy!==null) parts.push(`누적 ${sum26.toFixed(1)}${unit} (전년 ${sum25.toFixed(1)}${unit}, ${sumYoy>=0?'+':''}${sumYoy.toFixed(0)}%)${isUp?'으로 성장':'으로 둔화'} 흐름.`);
+  // 마무리 인사이트
+  if(yoy!==null && yoy>30) parts.push(`강한 모멘텀 — 다음 공구 일정 가속 검토 권장.`);
+  else if(yoy!==null && yoy<-30) parts.push(`전년 대비 부진 — 공구 일정 공백·재고 점검 필요.`);
+  else if(wow!==null && wow<-30) parts.push(`주간 둔화 — 차주 회복 모니터링 필요.`);
+  else parts.push(`안정 추세 유지.`);
+  return parts.join(' ');
+}
+
+function _renderWeekly(label, name, d2026, d2025, weeks, unit) {
+  unit = unit || '억';
+  document.getElementById('mWeekLabel').textContent = `2026 ${label} 주간 실적 vs 2025 동주차 (${unit})`;
+  document.getElementById('mWeekChartWrap').innerHTML = `<div style="position:relative;height:200px"><canvas id="mWeekC"></canvas></div>`;
+  _weekChart('mWeekC', weeks, d2026, d2025);
+  document.getElementById('mWeekTable').innerHTML = _weekTable('2026', '2025', weeks, d2026, d2025, unit);
+  // 자동 코멘트 (분석가 톤) → 코멘트 탭의 m3 영역에 추가 표시
+  document.getElementById('mWeekNote').textContent = '※ ' + _autoComment(label, name, d2026, d2025, unit);
+}
+
+// SKU 모달 — 같은 modal 재활용
+function openSkuModal(skuName) {
+  const sku = D.sku.find(r=>r[0]===skuName);
+  if(!sku) return;
+  _mKey = 'sku_'+skuName;
+  
+  const m26 = [sku[2], sku[3], sku[4], sku[5]];  // 1~4월 판매량
+  const total4m = m26.reduce((s,v)=>s+v, 0);
+  const stock = sku[1];
+  const note = sku[6] || '';
+  
+  document.getElementById('mTypeBadge').className = 'modal-type-badge';
+  document.getElementById('mTypeBadge').style.background = 'rgba(234,88,12,0.15)';
+  document.getElementById('mTypeBadge').style.color = '#ea580c';
+  document.getElementById('mTypeBadge').textContent = 'SKU';
+  document.getElementById('mTitle').textContent = skuName;
+  document.getElementById('mSubtitle').textContent = `재고 ${stock.toLocaleString()}개 · ${note}`;
+
+  const w26 = (D.weekly.sku[skuName]||{})['2026'] || [];
+  const w25 = (D.weekly.sku[skuName]||{})['2025'] || [];
+  const sumW26 = w26.reduce((s,v)=>s+v,0);
+  const sumW25 = w25.slice(0,18).reduce((s,v)=>s+v,0);
+  const yoyW = sumW25>0?((sumW26-sumW25)/sumW25*100):null;
+  
+  document.getElementById('mKpiRow').innerHTML = `
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">현재 재고</div>
+      <div class="modal-kpi-val" style="color:${stock<500?'var(--red)':stock<2000?'var(--orange)':'var(--green)'}">${stock.toLocaleString()}개</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">${stock<500?'🔴 저재고':stock<2000?'🟡 보통':'🟢 안정'}</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">2026 1~4월 누적</div>
+      <div class="modal-kpi-val" style="color:#2563eb">${total4m.toLocaleString()}개</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">월평균 ${(total4m/4).toFixed(0)}개</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">2026 1~18주 누적</div>
+      <div class="modal-kpi-val" style="color:#7c3aed">${sumW26.toLocaleString()}개</div>
+      <div class="modal-kpi-delta">${yoyW!==null?`<span class="${yoyW>=0?'up':'dn'}">${yoyW>=0?'▲':'▼'} ${Math.abs(yoyW).toFixed(0)}%</span> vs 2025`:'-'}</div>
+    </div>
+    <div class="modal-kpi">
+      <div class="modal-kpi-label">4월 추세</div>
+      <div class="modal-kpi-val" style="color:${m26[3]>=m26[2]?'var(--green)':'var(--red)'}">${m26[3]>=m26[2]?'▲':'▼'} ${Math.abs(m26[3]-m26[2]).toLocaleString()}개</div>
+      <div class="modal-kpi-delta" style="color:var(--muted)">3월 ${m26[2].toLocaleString()} → 4월 ${m26[3].toLocaleString()}</div>
+    </div>`;
+
+  // 월별 탭 — 단위 '개' (수량)
+  document.getElementById('mTrendWrap').innerHTML = '<div style="position:relative;height:220px"><canvas id="mTrendC"></canvas></div>';
+  // SKU 월별 차트 (재사용 가능한 형태로)
+  _makeSkuMonthChart('mTrendC', m26);
+  document.getElementById('mMonthTable').innerHTML = _skuMonthTable(m26);
+
+  // 주간 탭
+  const weeks18 = Array.from({length:18},(_,i)=>i+1);
+  _renderWeekly('SKU', skuName, w26, w25.slice(0,18), weeks18, '개');
+
+  // 세부 분석 탭
+  document.getElementById('mDetailTitle').textContent = `${skuName} — 발주/재고/판매 분석`;
+  document.getElementById('mDetailChartWrap').innerHTML = `<div style="padding:12px;background:#f8fafc;border-radius:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">발주/재고 메모</div><div style="font-size:13px;font-weight:500">${note||'(없음)'}</div></div>`;
+  // 월평균 vs 재고 분석
+  const avgQty = Math.max(1, total4m/4);
+  const monthsLeft = stock/avgQty;
+  document.getElementById('mDetailTable').innerHTML = `
+    <div style="margin-top:14px;font-size:12px;line-height:1.7">
+      <div><b>월평균 판매:</b> ${avgQty.toFixed(0).toLocaleString()}개</div>
+      <div><b>재고 소진 예상:</b> ${monthsLeft.toFixed(1)}개월분 ${monthsLeft<2?'<span style="color:var(--red);font-weight:600">⚠ 위험</span>':monthsLeft<4?'<span style="color:var(--orange)">주의</span>':'<span style="color:var(--green)">안정</span>'}</div>
+      <div><b>최고 판매월:</b> ${['1월','2월','3월','4월'][m26.indexOf(Math.max(...m26))]} (${Math.max(...m26).toLocaleString()}개)</div>
+      <div><b>최저 판매월:</b> ${['1월','2월','3월','4월'][m26.indexOf(Math.min(...m26))]} (${Math.min(...m26).toLocaleString()}개)</div>
+      <div><b>변동성:</b> ${m26.some(v=>v===0)?'있음 (0건 발생)':'안정'}</div>
+    </div>`;
+
+  _loadComments(_mKey);
+  document.getElementById('mCmtLabel1').textContent = '2월 판매 코멘트';
+  document.getElementById('mCmtLabel2').textContent = '3월 판매 코멘트';
+  document.getElementById('mCmtLabel3').textContent = '4월(~28일) 판매 코멘트';
+
+  _showModal();
+}
+
+function _makeSkuMonthChart(canvasId, m26) {
+  const ctx = document.getElementById(canvasId);
+  if(!ctx) return;
+  const c = new Chart(ctx, {
+    type:'bar',
+    data:{ labels: _MLAB4,
+      datasets:[{ label:'2026 판매량', data:m26, backgroundColor:m26.map((_,i)=>i===3?'#f97316':'#2563eb'), borderRadius:3 }]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:_GRID},ticks:{font:{size:11},color:'#8b91a0'}},y:{grid:{color:_GRID},ticks:{callback:v=>v.toLocaleString()+'개',font:{size:10},color:'#8b91a0'}}}
+    }
+  });
+  _mc.push(c);
+}
+function _skuMonthTable(m26) {
+  let h = '<table class="data-table" style="margin-top:10px"><thead><tr><th></th>';
+  for(const m of _MLAB4) h += `<th class="num">${m}</th>`;
+  h += '<th class="num">합계</th><th class="num">월평균</th></tr></thead><tbody>';
+  const sum = m26.reduce((s,v)=>s+v,0);
+  h += `<tr><td>2026 판매량</td>`;
+  for(const v of m26) h += `<td class="num">${v.toLocaleString()}개</td>`;
+  h += `<td class="num"><b>${sum.toLocaleString()}개</b></td><td class="num">${(sum/4).toFixed(0).toLocaleString()}개</td></tr>`;
+  h += '</tbody></table>';
+  return h;
+}
+
 function openPharmModal(name) {
   const p = D.gonggu.pharmacists.find(r=>r[0]===name);
   if(!p) return;
@@ -1424,6 +1654,11 @@ function openPharmModal(name) {
   document.getElementById('mDetailTable').innerHTML = _breakdownTable(D.detail.pharmBrandBreakdown[name]);
 
   // comments
+  // 주간 탭 (공구 CSV 기준 14~18주, 5주만)
+  const w26p = D.weekly.pharmGonggu[name] || [];
+  _renderWeekly('약사', name, w26p, [0,0,0,0,0], D.weekly.gongguWeeks, '억');
+  document.getElementById('mWeekNote').textContent += ' ⚠ 2025 주간 데이터 미보유 — 비교 불가.';
+
   _loadComments(_mKey);
   document.getElementById('mCmtLabel1').textContent = '2월 실적 코멘트';
   document.getElementById('mCmtLabel2').textContent = '3월 실적 코멘트';
@@ -1478,6 +1713,11 @@ function openBrandModal(name) {
   _makeStackChart('mDetailC', D.detail.brandPharmBreakdown[name]);
   document.getElementById('mDetailTable').innerHTML = _breakdownTable(D.detail.brandPharmBreakdown[name]);
 
+  // 주간 탭 (공구 CSV 기준 14~18주)
+  const w26b = D.weekly.brandGonggu[name] || [];
+  _renderWeekly('브랜드', name, w26b, [0,0,0,0,0], D.weekly.gongguWeeks, '억');
+  document.getElementById('mWeekNote').textContent += ' ⚠ 2025 주간 데이터 미보유 — 비교 불가.';
+
   _loadComments(_mKey);
   document.getElementById('mCmtLabel1').textContent = '2월 실적 코멘트';
   document.getElementById('mCmtLabel2').textContent = '3월 실적 코멘트';
@@ -1516,6 +1756,7 @@ function _showModal() {
     <!-- Tabs -->
     <div class="modal-tabs">
       <div class="modal-tab act" onclick="_switchTab('monthly',this)">월별 실적</div>
+      <div class="modal-tab" onclick="_switchTab('weekly',this)">주간 실적</div>
       <div class="modal-tab" onclick="_switchTab('detail',this)">세부 분석</div>
       <div class="modal-tab" onclick="_switchTab('comment',this)">코멘트</div>
     </div>
@@ -1524,6 +1765,13 @@ function _showModal() {
       <div class="modal-section-label">2026 월별 실적 vs 2025 동기간</div>
       <div id="mTrendWrap"></div>
       <div id="mMonthTable"></div>
+    </div>
+    <!-- Tab: 주간 실적 -->
+    <div class="tab-pane modal-body" id="mTab_weekly">
+      <div class="modal-section-label" id="mWeekLabel">2026 주간 실적 vs 2025 동주차</div>
+      <div id="mWeekChartWrap" style="margin-bottom:14px"></div>
+      <div class="week-scroll" style="margin-top:8px"><div id="mWeekTable"></div></div>
+      <div class="card-note" id="mWeekNote" style="margin-top:8px;font-size:11px;color:var(--muted)"></div>
     </div>
     <!-- Tab: 세부 분석 -->
     <div class="tab-pane modal-body" id="mTab_detail">
