@@ -1498,8 +1498,10 @@ const D = {
           <th class="num">1월</th>
           <th class="num">2월</th>
           <th class="num">3월</th>
-          <th class="num" style="color:var(--orange)">4월</th>
-          <th class="num">1~4월 합계</th>
+          <th class="num">4월</th>
+          <th class="num">5월</th>
+          <th class="num" style="color:var(--orange)">6월(~3일)</th>
+          <th class="num">1~5월 합계</th>
           <th class="num">월평균</th>
           <th>추이</th>
           <th>비고</th>
@@ -1847,11 +1849,12 @@ new Chart(document.getElementById('skuChart'), {
   data: {
     labels: top10.map(r=>r[0].length>8?r[0].slice(0,8)+'…':r[0]),
     datasets: [
-      { label: '1월', data: top10.map(r=>r[2]), backgroundColor: '#bfdbfe', borderRadius: 3, stack:'a' },
-      { label: '2월', data: top10.map(r=>r[3]), backgroundColor: '#60a5fa', borderRadius: 3, stack:'a' },
-      { label: '3월', data: top10.map(r=>r[4]), backgroundColor: '#2563eb', borderRadius: 3, stack:'a' },
-      { label: '4월', data: top10.map(r=>r[5]||0), backgroundColor: '#fb923c', borderRadius: 3, stack:'a' },
-      { label: '5월', data: top10.map(r=>r[6]||0), backgroundColor: '#f97316', borderRadius: 3, stack:'a' },
+      { label: '1월', data: top10.map(r=>r[2]), backgroundColor: '#dbeafe', borderRadius: 3, stack:'a' },
+      { label: '2월', data: top10.map(r=>r[3]), backgroundColor: '#93c5fd', borderRadius: 3, stack:'a' },
+      { label: '3월', data: top10.map(r=>r[4]), backgroundColor: '#3b82f6', borderRadius: 3, stack:'a' },
+      { label: '4월', data: top10.map(r=>r[5]||0), backgroundColor: '#fdba74', borderRadius: 3, stack:'a' },
+      { label: '5월', data: top10.map(r=>r[6]||0), backgroundColor: '#fb923c', borderRadius: 3, stack:'a' },
+      { label: '6월(~3일)', data: top10.map(r=>r[7]||0), backgroundColor: '#f97316', borderRadius: 3, stack:'a' },
     ]
   },
   options: { ...baseOpts(v=>v.toLocaleString()), plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}}, scales:{x:{stacked:true,grid:{color:BORDER},ticks:{font:{size:10},color:'#8b91a0',maxRotation:30}},y:{stacked:true,grid:{color:BORDER},ticks:{color:'#8b91a0',font:{size:11}}}}}
