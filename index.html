@@ -1565,7 +1565,7 @@ const D = {
           <th>#</th><th>약사</th><th>기수</th>
           <th class="num">2026 누적</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num" style="color:var(--orange)">6월(~3일)</th>
-          <th class="num" style="min-width:200px">주간실적 (17~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
+          <th style="min-width:240px;text-align:left;padding-left:12px">주간실적 (17~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
         </tr></thead>
         <tbody id="pharmTableBody"></tbody>
       </table>
@@ -1608,7 +1608,7 @@ const D = {
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
           <th class="num">4월</th>
           <th class="num">5월</th><th class="num" style="color:var(--orange)">6월(~3일)</th>
-          <th class="num" style="min-width:200px">주간실적 (17~23주)</th><th>추이</th>
+          <th style="min-width:240px;text-align:left;padding-left:12px">주간실적 (17~23주)</th><th>추이</th>
         </tr></thead>
         <tbody id="brandTableBody"></tbody>
       </table>
@@ -2036,7 +2036,7 @@ document.getElementById('pharmTableBody').innerHTML = _pharmTotalRow + pharmSort
     <td class="num">${r[6]>0?r[6]+'억':'-'}</td>
     <td class="num">${r[7]>0?r[7]+'억':'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[8]>0?r[8]+'억':'집계중'}</td>
-    <td><div class="week-mini-row">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(16,23).map((v,wi)=>`<div class="week-mini-cell ${wi===6?'hi':''}" title="${17+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(16,23).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
+    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(16,23).map((v,wi)=>`<div class="week-mini-cell ${wi===6?'hi':''}" title="${17+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(16,23).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td class="num">${r[10].toLocaleString()}원</td>
     <td style="font-size:11px;color:var(--muted)">${r[11]}</td>
   </tr>`;
@@ -2134,7 +2134,7 @@ document.getElementById('brandTableBody').innerHTML = _brandTotalRow + brandSort
     <td class="num">${r[5]>0?r[5]+'억':'-'}</td>
     <td class="num">${r[6]>0?r[6]+'억':'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[7]>0?r[7]+'억':'집계중'}</td>
-    <td><div class="week-mini-row">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(16,23).map((v,wi)=>`<div class="week-mini-cell ${wi===6?'hi':''}" title="${17+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(16,23).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
+    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(16,23).map((v,wi)=>`<div class="week-mini-cell ${wi===6?'hi':''}" title="${17+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(16,23).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
   </tr>`;
 }).join('');
