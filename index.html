@@ -1565,7 +1565,7 @@ const D = {
           <th>#</th><th>약사</th><th>기수</th>
           <th class="num">2026 누적</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num" style="color:var(--orange)">6월(~3일)</th>
-          <th style="min-width:240px;text-align:left;padding-left:12px">주간실적 (17~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
+          <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
         </tr></thead>
         <tbody id="pharmTableBody"></tbody>
       </table>
@@ -1608,7 +1608,7 @@ const D = {
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
           <th class="num">4월</th>
           <th class="num">5월</th><th class="num" style="color:var(--orange)">6월(~3일)</th>
-          <th style="min-width:240px;text-align:left;padding-left:12px">주간실적 (17~23주)</th><th>추이</th>
+          <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th>추이</th>
         </tr></thead>
         <tbody id="brandTableBody"></tbody>
       </table>
@@ -2003,6 +2003,19 @@ document.getElementById('gisuLegend').innerHTML = gisuEntries.map((e,i)=>`
     <span style="font-weight:600">${e[1].toFixed(1)}억 <span style="color:var(--muted)">(${(e[1]/totalPharm*100).toFixed(1)}%)</span></span>
   </div>`).join('');
 
+// 주간실적 컬럼 — 최근 4주 동적 계산
+const _WK_RECENT = 4;
+const _wkArr = D.weekly.weeks || [];
+const _wkEnd = _wkArr.length;
+const _wkStart = Math.max(0, _wkEnd - _WK_RECENT);
+const _wkN = _wkEnd - _wkStart;
+const _wkFirst = _wkArr[_wkStart] || 1;
+const _wkLast = _wkArr[_wkEnd - 1] || 1;
+// 헤더 라벨 자동 갱신
+document.querySelectorAll('.week-col-hdr').forEach(th => {
+  th.textContent = `주간실적 (${_wkFirst}~${_wkLast}주)`;
+});
+
 // 약사 테이블 — 2026 YTD 내림차순
 const gisuBadgeColor = { '1기':'b1','2기':'b2','3기':'b3','4기':'b4','0기':'b4','5기':'b55','5.5기':'b55' };
 // 합계 행 (전체 약사 합산)
@@ -2036,7 +2049,7 @@ document.getElementById('pharmTableBody').innerHTML = _pharmTotalRow + pharmSort
     <td class="num">${r[6]>0?r[6]+'억':'-'}</td>
     <td class="num">${r[7]>0?r[7]+'억':'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[8]>0?r[8]+'억':'집계중'}</td>
-    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(16,23).map((v,wi)=>`<div class="week-mini-cell ${wi===6?'hi':''}" title="${17+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(16,23).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
+    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td class="num">${r[10].toLocaleString()}원</td>
     <td style="font-size:11px;color:var(--muted)">${r[11]}</td>
   </tr>`;
@@ -2134,7 +2147,7 @@ document.getElementById('brandTableBody').innerHTML = _brandTotalRow + brandSort
     <td class="num">${r[5]>0?r[5]+'억':'-'}</td>
     <td class="num">${r[6]>0?r[6]+'억':'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[7]>0?r[7]+'억':'집계중'}</td>
-    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(16,23).map((v,wi)=>`<div class="week-mini-cell ${wi===6?'hi':''}" title="${17+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(16,23).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
+    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
   </tr>`;
 }).join('');
