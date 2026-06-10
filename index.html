@@ -55,6 +55,18 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .week-mini-cell { font-size: 10px; padding: 2px 5px; background: var(--accent-bg); border-radius: 3px; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
 .week-mini-cell.hi { background: var(--accent); color: white; }
 
+
+/* ── Achievement table — sticky 첫 컬럼 ── */
+.achieve-fixed { 
+  position: sticky; left: 0; z-index: 3; 
+  background: var(--white); 
+  white-space: nowrap; 
+  min-width: 90px; 
+  box-shadow: 2px 0 0 var(--border);
+  padding-right: 14px;
+}
+thead .achieve-fixed { background: #fafbfc; z-index: 4; }
+
 /* ── Layout ── */
 .page { max-width: 1440px; margin: 0 auto; padding: 0 0 48px; }
 .topbar { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 32px; display: flex; align-items: center; justify-content: space-between; height: 56px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
@@ -1424,11 +1436,14 @@ const D = {
 
   <!-- 달성률 테이블 -->
   <div class="card" style="margin-top:14px">
-    <div class="card-header"><span class="card-title">카테고리별 목표/실적 달성률</span></div>
-    <div class="card-body" style="padding:0">
-      <table class="data-table" id="achieveTable">
+    <div class="card-header">
+      <span class="card-title">카테고리별 목표/실적 달성률</span>
+      <span class="card-note" style="font-size:10px;color:var(--muted)">↔ 좌우 스크롤 (12월까지 확장)</span>
+    </div>
+    <div class="card-body" style="padding:0;overflow-x:auto">
+      <table class="data-table" id="achieveTable" style="min-width:3000px">
         <thead><tr>
-          <th>구분</th>
+          <th class="achieve-fixed">구분</th>
           <th class="num">1월 목표</th><th class="num">1월 실적</th><th class="num">달성률</th>
           <th class="num">2월 목표</th><th class="num">2월 실적</th><th class="num">달성률</th>
           <th class="num">3월 목표</th><th class="num">3월 실적</th><th class="num">달성률</th>
@@ -1743,7 +1758,7 @@ document.getElementById('achieveBody').innerHTML = cats.map((c,i) => {
   const ytdT = [0,1,2,3,4,5].reduce((s,m) => s + c.t[m], 0);
   const ytdPct = PCT(ytd, ytdT);
   let row = `<tr>
-    <td style="font-weight:600">${c.name}</td>`;
+    <td class="achieve-fixed" style="font-weight:600">${c.name}</td>`;
   for (let m = 0; m < 6; m++) {
     const ap = c.a[m] != null ? PCT(c.a[m], c.t[m]) : '-';
     const isApr = m === 3;
