@@ -57,13 +57,13 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 
 
 /* ── Achievement table — sticky 첫 컬럼 ── */
+#achieveTable th, #achieveTable td { white-space: nowrap; padding: 8px 10px; }
 .achieve-fixed { 
   position: sticky; left: 0; z-index: 3; 
   background: var(--white); 
-  white-space: nowrap; 
-  min-width: 90px; 
+  min-width: 80px; max-width: 90px;
   box-shadow: 2px 0 0 var(--border);
-  padding-right: 14px;
+  text-align: left;
 }
 thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 
@@ -1441,7 +1441,7 @@ const D = {
       <span class="card-note" style="font-size:10px;color:var(--muted)">↔ 좌우 스크롤 (12월까지 확장)</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table" id="achieveTable" style="min-width:3000px">
+      <table class="data-table" id="achieveTable" style="white-space:nowrap">
         <thead><tr>
           <th class="achieve-fixed">구분</th>
           <th class="num">1월 목표</th><th class="num">1월 실적</th><th class="num">달성률</th>
