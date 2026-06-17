@@ -166,8 +166,8 @@ footer { margin-top: 32px; padding: 16px 32px; border-top: 1px solid var(--borde
 .alert-icon { color: var(--orange); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 .alert-text { font-size: 12px; color: #9a3412; line-height: 1.6; }
 /* ── Detail Modal ───────────────────────────────────────── */
-.modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,20,0.6); z-index:2000; overflow-y:auto; padding:32px 16px; backdrop-filter:blur(2px); }
-.modal-panel { background:var(--white); max-width:1000px; margin:0 auto; border-radius:16px; overflow:hidden; box-shadow:0 24px 64px rgba(0,0,0,0.22); }
+.modal-overlay { display:none; position:fixed; inset:0; background:rgba(10,12,20,0.6); z-index:2000; padding:32px 16px; backdrop-filter:blur(2px); align-items:center; justify-content:center; }
+.modal-panel { background:var(--white); max-width:1000px; width:100%; margin:auto; border-radius:16px; box-shadow:0 24px 64px rgba(0,0,0,0.22); max-height:calc(100vh - 64px); display:flex; flex-direction:column; overflow:hidden; }
 .modal-head { padding:18px 24px 14px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; background:var(--white); }
 .modal-head-left { display:flex; align-items:center; gap:12px; }
 .modal-type-badge { font-size:10px; font-weight:700; padding:3px 9px; border-radius:20px; letter-spacing:.05em; }
@@ -238,7 +238,7 @@ footer { margin-top: 32px; padding: 16px 32px; border-top: 1px solid var(--borde
   .chart-wrap { max-height: 320px; }
   
   /* Modal */
-  .modal-overlay { padding: 12px 8px; }
+  .modal-overlay { padding: 12px 8px; align-items:flex-start; }
   .modal-panel { border-radius: 12px; }
   .modal-head { padding: 12px; flex-wrap: wrap; gap: 8px; }
   .modal-title { font-size: 15px; }
@@ -2668,7 +2668,7 @@ function _showModal() {
   document.querySelectorAll('#detailModal .modal-tab').forEach(t=>t.classList.remove('act'));
   document.getElementById('mTab_monthly').classList.add('act');
   document.querySelector('#detailModal .modal-tab').classList.add('act');
-  document.getElementById('detailModal').style.display = 'block';
+  document.getElementById('detailModal').style.display = 'flex';
   document.getElementById('detailModal').scrollTop = 0;
 }
 </script>
