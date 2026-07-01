@@ -1451,7 +1451,7 @@ const D = {
           <th class="num">2월 목표</th><th class="num">2월 실적</th><th class="num">달성률</th>
           <th class="num">3월 목표</th><th class="num">3월 실적</th><th class="num">달성률</th>
           <th class="num">4월 목표</th><th class="num">4월 실적</th><th class="num">달성률</th>
-          <th class="num">5월 목표</th><th class="num">5월 실적</th><th class="num">달성률</th><th class="num" style="color:var(--orange)">6월 목표</th><th class="num" style="color:var(--orange)">6월 실적</th><th class="num" style="color:var(--orange)">달성률</th>
+          <th class="num">5월 목표</th><th class="num">5월 실적</th><th class="num">달성률</th><th class="num">6월 목표</th><th class="num">6월 실적</th><th class="num">달성률</th><th class="num" style="color:var(--orange)">7월 목표</th><th class="num" style="color:var(--orange)">7월 실적</th><th class="num" style="color:var(--orange)">달성률</th>
           <th class="num">연간 목표</th><th class="num">누적 실적</th><th class="num">달성률</th>
         </tr></thead>
         <tbody id="achieveBody"></tbody>
@@ -1519,8 +1519,9 @@ const D = {
           <th class="num">3월</th>
           <th class="num">4월</th>
           <th class="num">5월</th>
+          <th class="num">6월</th>
           <th class="num" style="color:var(--orange)">7월(~1일)</th>
-          <th class="num">1~5월 합계</th>
+          <th class="num">1~6월 합계</th>
           <th class="num">월평균</th>
           <th>추이</th>
           <th>비고</th>
@@ -1583,7 +1584,7 @@ const D = {
         <thead><tr>
           <th>#</th><th>약사</th><th>기수</th>
           <th class="num">2026 누적</th>
-          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num" style="color:var(--orange)">7월(~1일)</th>
+          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num">6월</th><th class="num" style="color:var(--orange)">7월(~1일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
         </tr></thead>
         <tbody id="pharmTableBody"></tbody>
@@ -1626,7 +1627,7 @@ const D = {
           <th class="num">2026 누적</th><th class="num">비중</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
           <th class="num">4월</th>
-          <th class="num">5월</th><th class="num" style="color:var(--orange)">7월(~1일)</th>
+          <th class="num">5월</th><th class="num">6월</th><th class="num" style="color:var(--orange)">7월(~1일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th>추이</th>
         </tr></thead>
         <tbody id="brandTableBody"></tbody>
@@ -1765,12 +1766,12 @@ const achClass = pct => {
 };
 const annualTarget = cats.map(c => c.t.reduce((a,b)=>a+b,0));
 document.getElementById('achieveBody').innerHTML = cats.map((c,i) => {
-  const ytd = [0,1,2,3,4,5].reduce((s,m) => s + (c.a[m] || 0), 0);
-  const ytdT = [0,1,2,3,4,5].reduce((s,m) => s + c.t[m], 0);
+  const ytd = [0,1,2,3,4,5,6].reduce((s,m) => s + (c.a[m] || 0), 0);
+  const ytdT = [0,1,2,3,4,5,6].reduce((s,m) => s + c.t[m], 0);
   const ytdPct = PCT(ytd, ytdT);
   let row = `<tr>
     <td class="achieve-fixed" style="font-weight:600">${c.name}</td>`;
-  for (let m = 0; m < 6; m++) {
+  for (let m = 0; m < 7; m++) {
     const ap = c.a[m] != null ? PCT(c.a[m], c.t[m]) : '-';
     const isApr = m === 3;
     row += `<td class="num">${WA(c.t[m])}</td>
@@ -1889,11 +1890,11 @@ new Chart(document.getElementById('skuChart'), {
 
 // Inventory status
 const invBox = document.getElementById('invStatus');
-const lowInv = D.sku.filter(r => r[1] < 500 || r[8]);
+const lowInv = D.sku.filter(r => r[1] < 500 || r[9]);
 invBox.innerHTML = lowInv.length === 0
   ? '<div style="color:var(--green);font-size:12px">✓ 재고 위험 품목 없음</div>'
   : lowInv.map(r=>{
-    const avgSales = ((r[2]+r[3]+r[4]+r[5]+r[6]+r[7])/6).toFixed(0);
+    const avgSales = ((r[2]+r[3]+r[4]+r[5]+r[6]+r[7]+r[8])/7).toFixed(0);
     const weeksCov = r[1] > 0 ? (r[1] / (avgSales/4)).toFixed(1) : 0;
     const level = r[1] < 200 ? 'low' : r[1] < 1000 ? 'warn' : 'safe';
     const lvlLabel = level==='low' ? '🔴 위험' : '🟡 주의';
@@ -1910,7 +1911,7 @@ invBox.innerHTML = lowInv.length === 0
 // SKU table
 const skuBody = document.getElementById('skuTableBody');
 const skuFoot = document.getElementById('skuTableFoot');
-let totals = [0,0,0,0,0,0,0,0];
+let totals = [0,0,0,0,0,0,0,0,0];
 skuBody.innerHTML = D.sku.map((r,i)=>{
   const sum5 = r[2]+r[3]+r[4]+r[5]+r[6];
   const avg = (sum5/5).toFixed(0);
@@ -1945,7 +1946,8 @@ skuFoot.innerHTML = `<tr class="total-row">
   <td class="num">${totals[5].toLocaleString()}</td>
   <td class="num">${totals[6].toLocaleString()}</td>
   <td class="num">${totals[7].toLocaleString()}</td>
-  <td class="num">${(totals[7]/5).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
+  <td class="num">${totals[8].toLocaleString()}</td>
+  <td class="num">${(totals[8]/6).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g,',')}</td>
   <td colspan="2"></td>
 </tr>`;
 
@@ -2048,9 +2050,9 @@ const gisuBadgeColor = { '1기':'b1','2기':'b2','3기':'b3','4기':'b4','0기':
 // 합계 행 (전체 약사 합산)
 const _pharmTotals = pharmSorted.reduce((acc, r) => {
   acc[0] += r[2]||0; acc[1] += r[3]||0; acc[2] += r[4]||0;
-  acc[3] += r[5]||0; acc[4] += r[6]||0; acc[5] += r[7]||0; acc[6] += r[8]||0;
+  acc[3] += r[5]||0; acc[4] += r[6]||0; acc[5] += r[7]||0; acc[6] += r[8]||0; acc[7] += r[9]||0;
   return acc;
-}, [0,0,0,0,0,0,0]);
+}, [0,0,0,0,0,0,0,0]);
 const _pharmTotalRow = `<tr style="background:#f1f5f9;font-weight:700;border-bottom:2px solid var(--accent)">
   <td colspan="3" style="padding:10px 12px;color:var(--accent)">합계 (${pharmSorted.length}명)</td>
   <td class="num" style="color:var(--accent)">${_pharmTotals[0].toFixed(1)}억</td>
@@ -2059,12 +2061,13 @@ const _pharmTotalRow = `<tr style="background:#f1f5f9;font-weight:700;border-bot
   <td class="num">${_pharmTotals[3].toFixed(1)}억</td>
   <td class="num">${_pharmTotals[4].toFixed(1)}억</td>
   <td class="num">${_pharmTotals[5].toFixed(1)}억</td>
-  <td class="num" style="color:var(--orange)">${_pharmTotals[6].toFixed(1)}억</td>
+  <td class="num">${_pharmTotals[6].toFixed(1)}억</td>
+  <td class="num" style="color:var(--orange)">${_pharmTotals[7].toFixed(1)}억</td>
   <td colspan="3" style="color:var(--muted);font-size:11px">전 약사 합산</td>
 </tr>`;
 document.getElementById('pharmTableBody').innerHTML = _pharmTotalRow + pharmSorted.map((r,i)=>{
-  const trend = r[8]>r[7] ? '▲' : r[8]<r[7] ? '▼' : '→';
-  const tColor = r[8]>r[7]?'var(--green)':r[8]<r[7]?'var(--red)':'var(--muted)';
+  const trend = r[9]>r[8] ? '▲' : r[9]<r[8] ? '▼' : '→';
+  const tColor = r[9]>r[8]?'var(--green)':r[9]<r[8]?'var(--red)':'var(--muted)';
   return `<tr>
     <td style="color:var(--muted);font-size:11px">${i+1}</td>
     <td style="font-weight:600"><span class="pharm-name-link" onclick="openPharmModal('${r[0]}')">${r[0]}</span></td>
@@ -2075,10 +2078,11 @@ document.getElementById('pharmTableBody').innerHTML = _pharmTotalRow + pharmSort
     <td class="num">${r[5]>0?r[5]+'억':'-'}</td>
     <td class="num">${r[6]>0?r[6]+'억':'-'}</td>
     <td class="num">${r[7]>0?r[7]+'억':'-'}</td>
-    <td class="num" style="color:var(--orange);font-weight:600">${r[8]>0?r[8]+'억':'집계중'}</td>
+    <td class="num">${r[8]>0?r[8]+'억':'-'}</td>
+    <td class="num" style="color:var(--orange);font-weight:600">${r[9]>0?r[9]+'억':'집계중'}</td>
     <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
-    <td class="num">${r[10].toLocaleString()}원</td>
-    <td style="font-size:11px;color:var(--muted)">${r[11]}</td>
+    <td class="num">${r[11].toLocaleString()}원</td>
+    <td style="font-size:11px;color:var(--muted)">${r[12]}</td>
   </tr>`;
 }).join('');
 
@@ -2138,9 +2142,9 @@ const totalBrand = brandSorted.reduce((s,r)=>s+r[1],0);
 // 합계 행 (전체 브랜드 합산)
 const _brandTotals = brandSorted.reduce((acc, r) => {
   acc[0] += r[1]||0; acc[1] += r[2]||0; acc[2] += r[3]||0;
-  acc[3] += r[4]||0; acc[4] += r[5]||0; acc[5] += r[6]||0; acc[6] += r[7]||0;
+  acc[3] += r[4]||0; acc[4] += r[5]||0; acc[5] += r[6]||0; acc[6] += r[7]||0; acc[7] += r[8]||0;
   return acc;
-}, [0,0,0,0,0,0,0]);
+}, [0,0,0,0,0,0,0,0]);
 const _brandTotalRow = `<tr style="background:#f1f5f9;font-weight:700;border-bottom:2px solid var(--accent)">
   <td colspan="2" style="padding:10px 12px;color:var(--accent)">합계 (${brandSorted.length}개)</td>
   <td class="num" style="color:var(--accent)">${_brandTotals[0].toFixed(1)}억</td>
@@ -2150,13 +2154,14 @@ const _brandTotalRow = `<tr style="background:#f1f5f9;font-weight:700;border-bot
   <td class="num">${_brandTotals[3].toFixed(1)}억</td>
   <td class="num">${_brandTotals[4].toFixed(1)}억</td>
   <td class="num">${_brandTotals[5].toFixed(1)}억</td>
-  <td class="num" style="color:var(--orange)">${_brandTotals[6].toFixed(1)}억</td>
+  <td class="num">${_brandTotals[6].toFixed(1)}억</td>
+  <td class="num" style="color:var(--orange)">${_brandTotals[7].toFixed(1)}억</td>
   <td colspan="2" style="color:var(--muted);font-size:11px">전 브랜드 합산</td>
 </tr>`;
 document.getElementById('brandTableBody').innerHTML = _brandTotalRow + brandSorted.map((r,i)=>{
   const share = (r[1]/totalBrand*100).toFixed(1);
-  const trend = r[7]>r[2] ? '▲' : r[7]<r[2] ? '▼' : '→';
-  const tColor = r[7]>r[2]?'var(--green)':r[7]<r[2]?'var(--red)':'var(--muted)';
+  const trend = r[8]>r[2] ? '▲' : r[8]<r[2] ? '▼' : '→';
+  const tColor = r[8]>r[2]?'var(--green)':r[8]<r[2]?'var(--red)':'var(--muted)';
   const barW = Math.min((r[1]/D.gonggu.brands[0][1])*100,100).toFixed(0);
   return `<tr>
     <td style="color:var(--muted);font-size:11px">${i+1}</td>
@@ -2173,7 +2178,8 @@ document.getElementById('brandTableBody').innerHTML = _brandTotalRow + brandSort
     <td class="num">${r[4]>0?r[4]+'억':'-'}</td>
     <td class="num">${r[5]>0?r[5]+'억':'-'}</td>
     <td class="num">${r[6]>0?r[6]+'억':'-'}</td>
-    <td class="num" style="color:var(--orange);font-weight:600">${r[7]>0?r[7]+'억':'집계중'}</td>
+    <td class="num">${r[7]>0?r[7]+'억':'-'}</td>
+    <td class="num" style="color:var(--orange);font-weight:600">${r[8]>0?r[8]+'억':'집계중'}</td>
     <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
   </tr>`;
@@ -2242,14 +2248,15 @@ function _loadComments(key) {
 
 const _CHART_COLORS = ['#2563eb','#16a34a','#ea580c','#7c3aed','#f59e0b','#06b6d4','#ec4899','#84cc16'];
 const _GRID = '#e4e7ed';
-const _MLAB6 = ['1월','2월','3월','4월','5월','7월(~1일)'];
+const _MLAB7 = ['1월','2월','3월','4월','5월','6월','7월(~1일)'];
+const _MLAB6 = ['1월','2월','3월','4월','5월','6월'];
 const _MLAB5 = ['1월','2월','3월','4월','5월'];
 const _MLAB4 = ['1월','2월','3월','4월 마감'];
 
 function _makeTrendChart(canvasId, d26, d25) {
   const ctx = document.getElementById(canvasId);
   if(!ctx) return;
-  const labels = d26.length === 6 ? _MLAB6 : d26.length === 5 ? _MLAB5 : _MLAB4;
+  const labels = d26.length === 7 ? _MLAB7 : d26.length === 6 ? _MLAB6 : d26.length === 5 ? _MLAB5 : _MLAB4;
   const c = new Chart(ctx, {
     type:'bar',
     data:{
@@ -2275,7 +2282,7 @@ function _makeStackChart(canvasId, breakdown) {
   const ctx = document.getElementById(canvasId);
   if(!ctx||!breakdown||!breakdown.length) return;
   const filtered = breakdown.filter(b => b.monthly.some(v=>v>0));
-  const labels = filtered[0]?.monthly?.length === 6 ? _MLAB6 : filtered[0]?.monthly?.length === 5 ? _MLAB5 : _MLAB4;
+  const labels = filtered[0]?.monthly?.length === 7 ? _MLAB7 : filtered[0]?.monthly?.length === 6 ? _MLAB6 : filtered[0]?.monthly?.length === 5 ? _MLAB5 : _MLAB4;
   const c = new Chart(ctx, {
     type:'bar',
     data:{
@@ -2301,7 +2308,7 @@ function _makeStackChart(canvasId, breakdown) {
 }
 
 function _monthTable(d26, d25) {
-  const _MLAB = d26.length === 6 ? _MLAB6 : d26.length === 5 ? _MLAB5 : _MLAB4;
+  const _MLAB = d26.length === 7 ? _MLAB7 : d26.length === 6 ? _MLAB6 : d26.length === 5 ? _MLAB5 : _MLAB4;
   const yoy = d26.map((v,i) => d25[i]>0 ? ((v-d25[i])/d25[i]*100).toFixed(1) : (v>0?'신규':'-'));
   return `<table class="data-table" style="margin-top:14px">
     <thead><tr>
@@ -2442,10 +2449,10 @@ function openSkuModal(skuName) {
   if(!sku) return;
   _mKey = 'sku_'+skuName;
   
-  const m26 = [sku[2], sku[3], sku[4], sku[5], sku[6], sku[7]];  // 1~6월 판매량
+  const m26 = [sku[2], sku[3], sku[4], sku[5], sku[6], sku[7], sku[8]];  // 1~7월 판매량
   const total4m = m26.reduce((s,v)=>s+v, 0);  // 1~5월 합
   const stock = sku[1];
-  const note = sku[8] || '';
+  const note = sku[9] || '';
   
   document.getElementById('mTypeBadge').className = 'modal-type-badge';
   document.getElementById('mTypeBadge').style.background = 'rgba(234,88,12,0.15)';
@@ -2495,14 +2502,14 @@ function openSkuModal(skuName) {
   document.getElementById('mDetailTitle').textContent = `${skuName} — 발주/재고/판매 분석`;
   document.getElementById('mDetailChartWrap').innerHTML = `<div style="padding:12px;background:#f8fafc;border-radius:8px"><div style="font-size:12px;color:var(--muted);margin-bottom:6px">발주/재고 메모</div><div style="font-size:13px;font-weight:500">${note||'(없음)'}</div></div>`;
   // 월평균 vs 재고 분석
-  const avgQty = Math.max(1, total4m/6);
+  const avgQty = Math.max(1, total4m/7);
   const monthsLeft = stock/avgQty;
   document.getElementById('mDetailTable').innerHTML = `
     <div style="margin-top:14px;font-size:12px;line-height:1.7">
       <div><b>월평균 판매:</b> ${avgQty.toFixed(0).toLocaleString()}개</div>
       <div><b>재고 소진 예상:</b> ${monthsLeft.toFixed(1)}개월분 ${monthsLeft<2?'<span style="color:var(--red);font-weight:600">⚠ 위험</span>':monthsLeft<4?'<span style="color:var(--orange)">주의</span>':'<span style="color:var(--green)">안정</span>'}</div>
-      <div><b>최고 판매월:</b> ${['1월','2월','3월','4월','5월','6월'][m26.indexOf(Math.max(...m26))]} (${Math.max(...m26).toLocaleString()}개)</div>
-      <div><b>최저 판매월:</b> ${['1월','2월','3월','4월','5월','6월'][m26.indexOf(Math.min(...m26))]} (${Math.min(...m26).toLocaleString()}개)</div>
+      <div><b>최고 판매월:</b> ${['1월','2월','3월','4월','5월','6월','7월'][m26.indexOf(Math.max(...m26))]} (${Math.max(...m26).toLocaleString()}개)</div>
+      <div><b>최저 판매월:</b> ${['1월','2월','3월','4월','5월','6월','7월'][m26.indexOf(Math.min(...m26))]} (${Math.min(...m26).toLocaleString()}개)</div>
       <div><b>변동성:</b> ${m26.some(v=>v===0)?'있음 (0건 발생)':'안정'}</div>
     </div>`;
 
@@ -2519,8 +2526,8 @@ function _makeSkuMonthChart(canvasId, m26) {
   if(!ctx) return;
   const c = new Chart(ctx, {
     type:'bar',
-    data:{ labels: _MLAB6,
-      datasets:[{ label:'2026 판매량', data:m26, backgroundColor:m26.map((_,i)=>i===5?'#f97316':i===4?'#fb923c':'#2563eb'), borderRadius:3 }]},
+    data:{ labels: _MLAB7,
+      datasets:[{ label:'2026 판매량', data:m26, backgroundColor:m26.map((_,i)=>i===6?'#f97316':i===5?'#fb923c':'#2563eb'), borderRadius:3 }]},
     options:{
       responsive:true, maintainAspectRatio:false,
       plugins:{legend:{display:false}},
@@ -2531,7 +2538,7 @@ function _makeSkuMonthChart(canvasId, m26) {
 }
 function _skuMonthTable(m26) {
   let h = '<table class="data-table" style="margin-top:10px"><thead><tr><th></th>';
-  for(const m of _MLAB6) h += `<th class="num">${m}</th>`;
+  for(const m of _MLAB7) h += `<th class="num">${m}</th>`;
   h += '<th class="num">합계</th><th class="num">월평균</th></tr></thead><tbody>';
   const sum = m26.reduce((s,v)=>s+v,0);
   h += `<tr><td>2026 판매량</td>`;
@@ -2610,8 +2617,8 @@ function openBrandModal(name) {
   if(!b) return;
   _mKey = 'brand_'+name;
 
-  const d26 = [b[2],b[3],b[4],b[5],b[6]||0,b[7]||0];
-  const d25 = (D.detail.brandPrev2025[name] || [0,0,0,0]).concat([0,0]);
+  const d26 = [b[2],b[3],b[4],b[5],b[6]||0,b[7]||0,b[8]||0];
+  const d25 = (D.detail.brandPrev2025[name] || [0,0,0,0]).concat([0,0,0]);
   const ytd25 = d25.reduce((s,v)=>s+v,0);
   const yoyPct = ytd25>0 ? ((b[1]-ytd25)/ytd25*100).toFixed(1) : null;
 
