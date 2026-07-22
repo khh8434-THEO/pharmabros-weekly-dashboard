@@ -1676,8 +1676,19 @@ const WW = n => n == null ? '-' : (n/10000).toFixed(1).replace(/\B(?=(\d{3})+(?!
 const WA = n => n == null ? '-' : (n/10000).toLocaleString('ko-KR', {maximumFractionDigits:1}) + '억';
 const PCT = (a, b) => b ? ((a/b)*100).toFixed(1) + '%' : '-';
 const MONTHS = ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'];
-const M16 = ['25-01','25-02','25-03','25-04','25-05','25-06','25-07','25-08','25-09','25-10','25-11','25-12','26-01','26-02','26-03','26-04▼'];
-const M15 = M16.slice(0,15);
+// 공구 월별 라벨 — D.gonggu.monthly 길이에 맞춰 동적 생성
+const _2025_LABELS = ['25-01','25-02','25-03','25-04','25-05','25-06','25-07','25-08','25-09','25-10','25-11','25-12'];
+const _gLen = (D.gonggu.monthly||[]).length;
+const M16 = (() => {
+  const labels = [..._2025_LABELS];
+  for(let i = 12; i < _gLen; i++) {
+    const mo = (i - 12 + 1);
+    const suffix = (i === _gLen - 1) ? '▼' : '';
+    labels.push(`26-${String(mo).padStart(2,'0')}${suffix}`);
+  }
+  return labels;
+})();
+const M15 = M16.slice(0, M16.length - 1);
 
 // ── Meta ─────────────────────────────────────────────────────
 document.getElementById('topDate').textContent = D.reportDate;
