@@ -1963,14 +1963,22 @@ skuFoot.innerHTML = `<tr class="total-row">
 </tr>`;
 
 // Gonggu monthly — M16 포함 (4월 부분집계)
+// 공구 실매출 차트 — 동적 dataset (진행중 월은 별도 강조)
+const _gm = D.gonggu.monthly || [];
+const _gmLen = _gm.length;
+const _gmLastIdx = _gmLen - 1;
+const _gm2025 = [..._gm.slice(0, 12), ...Array(Math.max(0, _gmLen - 12)).fill(null)];
+const _gm2026Fixed = [...Array(12).fill(null), ..._gm.slice(12, _gmLastIdx), null];
+const _gm2026Progress = [...Array(_gmLastIdx).fill(null), _gm[_gmLastIdx]];
+const _progressMonth = _gmLen - 12; // 26년 몇 월 진행중인지 (예: 7)
 new Chart(document.getElementById('gongguChart'), {
   type: 'bar',
   data: {
     labels: M16,
     datasets: [
-      { label: '2025', data: [...D.gonggu.monthly.slice(0,12), null,null,null,null], backgroundColor: '#bfdbfe', borderRadius: 3 },
-      { label: '2026(확정)', data: [null,null,null,null,null,null,null,null,null,null,null,null,...D.gonggu.monthly.slice(12,15),null], backgroundColor: '#2563eb', borderRadius: 3 },
-      { label: '4월(진행중)', data: [null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,D.gonggu.monthly[15]], backgroundColor: '#f97316', borderRadius: 3, borderWidth: 2, borderColor: '#ea580c' },
+      { label: '2025', data: _gm2025, backgroundColor: '#bfdbfe', borderRadius: 3 },
+      { label: '2026(확정)', data: _gm2026Fixed, backgroundColor: '#2563eb', borderRadius: 3 },
+      { label: `${_progressMonth}월(진행중)`, data: _gm2026Progress, backgroundColor: '#f97316', borderRadius: 3, borderWidth: 2, borderColor: '#ea580c' },
     ]
   },
   options: { ...baseOpts(v=>v+'억'), plugins:{legend:{display:true,position:'top',labels:{boxWidth:8,font:{size:10},color:'#8b91a0'}}} }
