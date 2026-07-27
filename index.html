@@ -128,9 +128,9 @@ thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 
 /* ── Tables ── */
 .data-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.data-table th { color: var(--muted); font-weight: 600; text-align: left; padding: 8px 10px; border-bottom: 1.5px solid var(--border); font-size: 11px; white-space: nowrap; }
+.data-table th { color: var(--muted); font-weight: 600; text-align: left; padding: 6px 7px; border-bottom: 1.5px solid var(--border); font-size: 11px; white-space: nowrap; }
 .data-table th.num { text-align: right; }
-.data-table td { padding: 7px 10px; border-bottom: 1px solid var(--border-light); vertical-align: middle; }
+.data-table td { padding: 5px 7px; border-bottom: 1px solid var(--border-light); vertical-align: middle; white-space: nowrap; }
 .data-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: #fafbfc; }
@@ -356,6 +356,9 @@ const D = {
     // 2026 YTD 공구 합계 (Q1 확정 + 4월 부분)
     ytd2026: 473.51,     // 1~7월 473.5억 (~7/22)
     ytd2025q1: 44.9+46.5+50.9,          // 142.3억 (2025 Q1)
+
+    // 약사 실명 → 닉네임 매핑
+    pharmNick: {"임별": "뵤리", "소윤": "쏘핏", "이재연": "재돌", "신유진": "두둥실팜", "이재훈": "두꺼비팜", "심혜란": "유이", "남기헌": "남기헌", "김춘호": "봄", "정인지": "도비", "유선영": "딸기", "허자신": "자신", "이평화": "위키", "최길문": "바른약", "최형재": "형제", "임나현": "삐약", "손혜림": "은하", "고신형": "비책", "배혜정": "우리", "변종석": "쀼", "정혜윤": "유니", "이상민": "심플", "이수찬": "임당", "최혜은": "쎄씨", "김혜란": "샤인", "최명훈": "피셜", "이종우": "드림", "김미성": "김미성", "이지영": "하유", "고상온": "고", "서혜원": "스마일", "박소윤": "다식", "민재원": "몸짱제니", "우수빈": "베이지", "김일하": "케이맘", "김소정": "릴리", "최지선": "해피", "장세경": "마이", "박홍일": "드럭해커", "박소영": "마미", "조연서": "띱", "최준혁": "타임", "임유미": "슈퍼맘", "박지현": "하루약사", "성경연": "비비약사", "장무현": "메디슨맨약사", "오세영": "두잇약사"},
 
     // 약사별: [이름, 기수, 2026YTD(1~4월,억), Jan26, Feb26, Mar26, Apr 마감, 취소율(%), 건당평균, 주력브랜드]
     pharmacists: [
@@ -1580,9 +1583,9 @@ const D = {
       <span class="card-note">공구 기준 · 실매출(취소 제외)</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table" style="min-width:1400px">
+      <table class="data-table" style="min-width:1500px">
         <thead><tr>
-          <th>#</th><th>약사</th><th>기수</th>
+          <th>#</th><th>약사</th><th>닉네임</th><th>기수</th>
           <th class="num">2026 누적</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num">6월</th><th class="num" style="color:var(--orange)">7월(~22일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
@@ -2073,7 +2076,7 @@ const _pharmTotals = pharmSorted.reduce((acc, r) => {
   return acc;
 }, [0,0,0,0,0,0,0,0]);
 const _pharmTotalRow = `<tr style="background:#f1f5f9;font-weight:700;border-bottom:2px solid var(--accent)">
-  <td colspan="3" style="padding:10px 12px;color:var(--accent)">합계 (${pharmSorted.length}명)</td>
+  <td colspan="4" style="padding:10px 12px;color:var(--accent)">합계 (${pharmSorted.length}명)</td>
   <td class="num" style="color:var(--accent)">${_pharmTotals[0].toFixed(1)}억</td>
   <td class="num">${_pharmTotals[1].toFixed(1)}억</td>
   <td class="num">${_pharmTotals[2].toFixed(1)}억</td>
@@ -2087,9 +2090,11 @@ const _pharmTotalRow = `<tr style="background:#f1f5f9;font-weight:700;border-bot
 document.getElementById('pharmTableBody').innerHTML = _pharmTotalRow + pharmSorted.map((r,i)=>{
   const trend = r[9]>r[8] ? '▲' : r[9]<r[8] ? '▼' : '→';
   const tColor = r[9]>r[8]?'var(--green)':r[9]<r[8]?'var(--red)':'var(--muted)';
+  const _nick = (D.gonggu.pharmNick||{})[r[0]] || '-';
   return `<tr>
     <td style="color:var(--muted);font-size:11px">${i+1}</td>
     <td style="font-weight:600"><span class="pharm-name-link" onclick="openPharmModal('${r[0]}')">${r[0]}</span></td>
+    <td style="font-size:11px;color:var(--muted)">${_nick}</td>
     <td><span class="badge ${gisuBadgeColor[r[1]]||'b4'}">${r[1]}</span></td>
     <td class="num" style="font-weight:700">${r[2]}억</td>
     <td class="num">${r[3]>0?r[3]+'억':'-'}</td>
