@@ -1951,15 +1951,15 @@ invBox.innerHTML = lowInv.length === 0
 // SKU table
 const skuBody = document.getElementById('skuTableBody');
 const skuFoot = document.getElementById('skuTableFoot');
-let totals = [0,0,0,0,0,0,0,0,0];
+let totals = [0,0,0,0,0,0,0,0,0,0];
 skuBody.innerHTML = D.sku.map((r,i)=>{
-  const sum5 = r[2]+r[3]+r[4]+r[5]+r[6];
-  const avg = (sum5/5).toFixed(0);
-  const trend = r[7]>r[6] ? '▲' : r[7]<r[6] ? '▼' : r[6]>r[2] ? '↗' : r[6]<r[2] ? '↘' : '→';
-  const tColor = r[7]>r[6] ? 'var(--green)' : r[7]<r[6] ? 'var(--red)' : 'var(--muted)';
+  const sum6 = r[2]+r[3]+r[4]+r[5]+r[6]+r[7];  // 1~6월 합계
+  const avg = (sum6/6).toFixed(0);
+  const trend = r[8]>r[7] ? '▲' : r[8]<r[7] ? '▼' : r[7]>r[2] ? '↗' : r[7]<r[2] ? '↘' : '→';
+  const tColor = r[8]>r[7] ? 'var(--green)' : r[8]<r[7] ? 'var(--red)' : 'var(--muted)';
   const invLevel = r[1] < 200 ? 'low' : r[1] < 1000 ? 'warn' : 'safe';
   const invLabel = invLevel==='low' ? '🔴' : invLevel==='warn' ? '🟡' : '';
-  totals[0]+=r[1]; totals[1]+=r[2]; totals[2]+=r[3]; totals[3]+=r[4]; totals[4]+=r[5]||0; totals[5]+=r[6]||0; totals[6]+=r[7]||0; totals[7]+=sum5;
+  totals[0]+=r[1]; totals[1]+=r[2]; totals[2]+=r[3]; totals[3]+=r[4]; totals[4]+=r[5]||0; totals[5]+=r[6]||0; totals[6]+=r[7]||0; totals[7]+=r[8]||0; totals[8]+=sum6;
   return `<tr>
     <td style="color:var(--muted);font-size:11px">${i+1}</td>
     <td style="font-weight:500"><span class="pharm-name-link" onclick="openSkuModal('${r[0]}')">${r[0]}</span></td>
@@ -1968,12 +1968,13 @@ skuBody.innerHTML = D.sku.map((r,i)=>{
     <td class="num">${r[3].toLocaleString()}</td>
     <td class="num">${r[4].toLocaleString()}</td>
     <td class="num">${r[5].toLocaleString()}</td>
-    <td class="num">${(r[6]||0).toLocaleString()}</td>
-    <td class="num" style="color:var(--orange);font-weight:600">${(r[7]||0).toLocaleString()}</td>
-    <td class="num" style="font-weight:600">${sum5.toLocaleString()}</td>
+    <td class="num">${r[6].toLocaleString()}</td>
+    <td class="num">${(r[7]||0).toLocaleString()}</td>
+    <td class="num" style="color:var(--orange);font-weight:600">${(r[8]||0).toLocaleString()}</td>
+    <td class="num" style="font-weight:600">${sum6.toLocaleString()}</td>
     <td class="num">${Number(avg).toLocaleString()}</td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
-    <td style="font-size:11px;color:var(--orange)">${r[8]||''}</td>
+    <td style="font-size:11px;color:var(--orange)">${r[9]||''}</td>
   </tr>`;
 }).join('');
 skuFoot.innerHTML = `<tr class="total-row">
