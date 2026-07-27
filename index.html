@@ -52,8 +52,9 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .week-mini-row { display: flex; gap: 4px; align-items: center; overflow-x: auto; padding: 4px 0; max-width: 280px; }
 .week-mini-row::-webkit-scrollbar { height: 4px; }
 .week-mini-row::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
-.week-mini-cell { font-size: 10px; padding: 2px 5px; background: var(--accent-bg); border-radius: 3px; color: var(--accent); white-space: nowrap; flex-shrink: 0; }
-.week-mini-cell.hi { background: var(--accent); color: white; }
+.week-mini-cell { font-size: 10px; padding: 2px 5px; background: #f1f5f9; border-radius: 3px; color: #475569; white-space: nowrap; flex-shrink: 0; }
+.week-mini-cell.hi { background: #64748b; color: white; }
+.week-mini-cell.sum { background: #059669; color: white; font-weight: 700; }
 
 
 /* ── Achievement table — sticky 첫 컬럼 ── */
@@ -2131,7 +2132,7 @@ document.getElementById('pharmTableBody').innerHTML = _pharmTotalRow + pharmSort
     <td class="num">${r[7]>0?`<span class="cell-link" onclick="openPharmDrill('${r[0]}','5')">${r[7]}억</span>`:'-'}</td>
     <td class="num">${r[8]>0?`<span class="cell-link" onclick="openPharmDrill('${r[0]}','6')">${r[8]}억</span>`:'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[9]>0?`<span class="cell-link" onclick="openPharmDrill('${r[0]}','7')">${r[9]}억</span>`:'집계중'}</td>
-    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
+    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell sum">합 ${((D.weekly.pharmGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td class="num">${r[11].toLocaleString()}원</td>
     <td style="font-size:11px;color:var(--muted)">${r[12]}</td>
   </tr>`;
@@ -2231,7 +2232,7 @@ document.getElementById('brandTableBody').innerHTML = _brandTotalRow + brandSort
     <td class="num">${r[6]>0?`<span class="cell-link" onclick="openBrandDrill('${r[0]}','5')">${r[6]}억</span>`:'-'}</td>
     <td class="num">${r[7]>0?`<span class="cell-link" onclick="openBrandDrill('${r[0]}','6')">${r[7]}억</span>`:'-'}</td>
     <td class="num" style="color:var(--orange);font-weight:600">${r[8]>0?`<span class="cell-link" onclick="openBrandDrill('${r[0]}','7')">${r[8]}억</span>`:'집계중'}</td>
-    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell" style="background:#1e40af;color:white;font-weight:700">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
+    <td style="padding-left:12px;text-align:left"><div class="week-mini-row" style="justify-content:flex-start">${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).map((v,wi)=>`<div class="week-mini-cell ${wi===_wkN-1?'hi':''}" title="${_wkFirst+wi}주">${v||'-'}</div>`).join('')}<div class="week-mini-cell sum">합 ${((D.weekly.brandGonggu[r[0]]||{})['2026']||[]).slice(_wkStart,_wkEnd).reduce((s,v)=>s+(v||0),0).toFixed(2)}억</div></div></td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
   </tr>`;
 }).join('');
