@@ -68,32 +68,43 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 }
 thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 
-/* ── SKU 표: # + 품명 컬럼 sticky ── */
+/* ── SKU 표: # + 품명 컬럼 sticky (폭 고정) ── */
 #skuTable th:nth-child(1), #skuTable td:nth-child(1) {
-  position: sticky; left: 0; z-index: 3; background: var(--white); min-width: 28px; width: 28px;
+  position: sticky; left: 0; z-index: 3; background: var(--white);
+  width: 28px; min-width: 28px; max-width: 28px;
 }
 #skuTable th:nth-child(2), #skuTable td:nth-child(2) {
-  position: sticky; left: 28px; z-index: 3; background: var(--white); min-width: 140px; box-shadow: 2px 0 0 var(--border);
+  position: sticky; left: 28px; z-index: 3; background: var(--white);
+  width: 130px; min-width: 130px; max-width: 130px;
+  box-shadow: 2px 0 0 var(--border);
+  overflow: hidden; text-overflow: ellipsis;
 }
 #skuTable thead th:nth-child(1), #skuTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #skuTable tr.total-row td[colspan="2"] { position: sticky; left: 0; z-index: 3; background: #f1f5f9; }
 
-/* ── 약사 표: # + 약사 컬럼 sticky ── */
+/* ── 약사 표: # + 약사 컬럼 sticky (폭 고정) ── */
 #pharmTable th:nth-child(1), #pharmTable td:nth-child(1) {
-  position: sticky; left: 0; z-index: 3; background: var(--white); min-width: 28px; width: 28px;
+  position: sticky; left: 0; z-index: 3; background: var(--white);
+  width: 28px; min-width: 28px; max-width: 28px;
 }
 #pharmTable th:nth-child(2), #pharmTable td:nth-child(2) {
-  position: sticky; left: 28px; z-index: 3; background: var(--white); min-width: 70px; box-shadow: 2px 0 0 var(--border);
+  position: sticky; left: 28px; z-index: 3; background: var(--white);
+  width: 70px; min-width: 70px; max-width: 70px;
+  box-shadow: 2px 0 0 var(--border);
 }
 #pharmTable thead th:nth-child(1), #pharmTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #pharmTable tr[style*="background:#f1f5f9"] td:first-child { background: #f1f5f9 !important; }
 
-/* ── 브랜드 표: # + 브랜드 컬럼 sticky ── */
+/* ── 브랜드 표: # + 브랜드 컬럼 sticky (폭 고정) ── */
 #brandTable th:nth-child(1), #brandTable td:nth-child(1) {
-  position: sticky; left: 0; z-index: 3; background: var(--white); min-width: 28px; width: 28px;
+  position: sticky; left: 0; z-index: 3; background: var(--white);
+  width: 28px; min-width: 28px; max-width: 28px;
 }
 #brandTable th:nth-child(2), #brandTable td:nth-child(2) {
-  position: sticky; left: 28px; z-index: 3; background: var(--white); min-width: 100px; box-shadow: 2px 0 0 var(--border);
+  position: sticky; left: 28px; z-index: 3; background: var(--white);
+  width: 110px; min-width: 110px; max-width: 110px;
+  box-shadow: 2px 0 0 var(--border);
+  overflow: hidden; text-overflow: ellipsis;
 }
 #brandTable thead th:nth-child(1), #brandTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #brandTable tr[style*="background:#f1f5f9"] td:first-child { background: #f1f5f9 !important; }
