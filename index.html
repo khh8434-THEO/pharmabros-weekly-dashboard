@@ -68,46 +68,70 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 }
 thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 
-/* ── SKU 표: # + 품명 컬럼 sticky (폭 고정) ── */
+/* ── SKU 표: # + 품명 컬럼 sticky (데스크톱: 자연 폭) ── */
 #skuTable th:nth-child(1), #skuTable td:nth-child(1) {
   position: sticky; left: 0; z-index: 3; background: var(--white);
-  width: 28px; min-width: 28px; max-width: 28px;
+  min-width: 28px;
 }
 #skuTable th:nth-child(2), #skuTable td:nth-child(2) {
   position: sticky; left: 28px; z-index: 3; background: var(--white);
-  width: 130px; min-width: 130px; max-width: 130px;
+  white-space: nowrap;
   box-shadow: 2px 0 0 var(--border);
-  overflow: hidden; text-overflow: ellipsis;
 }
 #skuTable thead th:nth-child(1), #skuTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #skuTable tr.total-row td[colspan="2"] { position: sticky; left: 0; z-index: 3; background: #f1f5f9; }
 
-/* ── 약사 표: # + 약사 컬럼 sticky (폭 고정) ── */
+/* ── 약사 표: # + 약사 컬럼 sticky ── */
 #pharmTable th:nth-child(1), #pharmTable td:nth-child(1) {
   position: sticky; left: 0; z-index: 3; background: var(--white);
-  width: 28px; min-width: 28px; max-width: 28px;
+  min-width: 28px;
 }
 #pharmTable th:nth-child(2), #pharmTable td:nth-child(2) {
   position: sticky; left: 28px; z-index: 3; background: var(--white);
-  width: 70px; min-width: 70px; max-width: 70px;
+  white-space: nowrap;
   box-shadow: 2px 0 0 var(--border);
 }
 #pharmTable thead th:nth-child(1), #pharmTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #pharmTable tr[style*="background:#f1f5f9"] td:first-child { background: #f1f5f9 !important; }
 
-/* ── 브랜드 표: # + 브랜드 컬럼 sticky (폭 고정) ── */
+/* ── 브랜드 표: # + 브랜드 컬럼 sticky ── */
 #brandTable th:nth-child(1), #brandTable td:nth-child(1) {
   position: sticky; left: 0; z-index: 3; background: var(--white);
-  width: 28px; min-width: 28px; max-width: 28px;
+  min-width: 28px;
 }
 #brandTable th:nth-child(2), #brandTable td:nth-child(2) {
   position: sticky; left: 28px; z-index: 3; background: var(--white);
-  width: 110px; min-width: 110px; max-width: 110px;
+  white-space: nowrap;
   box-shadow: 2px 0 0 var(--border);
-  overflow: hidden; text-overflow: ellipsis;
 }
 #brandTable thead th:nth-child(1), #brandTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #brandTable tr[style*="background:#f1f5f9"] td:first-child { background: #f1f5f9 !important; }
+
+/* ── 모바일: sticky 컬럼 폭 강제 고정 (잉여 폭 분배 방지) ── */
+@media (max-width: 768px) {
+  #skuTable { table-layout: fixed; }
+  #skuTable th:nth-child(1), #skuTable td:nth-child(1) { width: 24px !important; min-width: 24px !important; max-width: 24px !important; }
+  #skuTable th:nth-child(2), #skuTable td:nth-child(2) {
+    width: 130px !important; min-width: 130px !important; max-width: 130px !important;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  #skuTable th:nth-child(n+3), #skuTable td:nth-child(n+3) { width: 60px; min-width: 60px; }
+  #skuTable th:last-child, #skuTable td:last-child { width: 140px; min-width: 140px; }
+
+  #pharmTable { table-layout: fixed; }
+  #pharmTable th:nth-child(1), #pharmTable td:nth-child(1) { width: 24px !important; min-width: 24px !important; max-width: 24px !important; }
+  #pharmTable th:nth-child(2), #pharmTable td:nth-child(2) {
+    width: 70px !important; min-width: 70px !important; max-width: 70px !important;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+
+  #brandTable { table-layout: fixed; }
+  #brandTable th:nth-child(1), #brandTable td:nth-child(1) { width: 24px !important; min-width: 24px !important; max-width: 24px !important; }
+  #brandTable th:nth-child(2), #brandTable td:nth-child(2) {
+    width: 110px !important; min-width: 110px !important; max-width: 110px !important;
+    overflow: hidden; text-overflow: ellipsis;
+  }
+}
 
 
 /* ── Drill-down modal ── */
