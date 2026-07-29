@@ -1891,7 +1891,7 @@ const kpis = [
   // 5) 7월 공구 (기존 카드4 우측 이동)
   { label: `${D.latestPartialMonth}월 공구 (~${_reportDay}일)`, val: D.gonggu.monthly[D.gonggu.monthly.length-1].toFixed(1)+'억', sub: `${D.latestMonth}월 마감 ${D.gonggu.monthly[D.gonggu.monthly.length-2]}억 (전월) · 진행중`, delta: '<span style="color:var(--orange)">▶ 집계중</span>', color: 'orange' },
   // 6) 2026 연간 목표
-  { label: '2026 연간 목표', val: '550억', sub: `전 카테고리 합산`, delta: `<span class="neu">연간달성률 ${(_actualYTD/5500000000*100).toFixed(1)}%</span>`, color: 'purple' },
+  { label: '2026 연간 목표', val: '550억', sub: `전 카테고리 합산 (누적 ${ytdShip26}억)`, delta: `<span class="neu">연간달성률 ${(_actualYTD/5500000*100).toFixed(1)}%</span>`, color: 'purple' },
 ];
 document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
   <div class="kpi-card ${k.color}">
