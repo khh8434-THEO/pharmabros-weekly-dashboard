@@ -1851,33 +1851,31 @@ document.getElementById('alertSection').innerHTML = `
 // ── KPI Cards (2026 YTD 기준) ────────────────────────────────
 // 보고서 일자 추출 (KPI 라벨 자동 갱신용)
 const _reportDay = (D.reportDate.match(/(\d+)일/)||['','?'])[1];
-// 마감월 기준 누적 (정직한 YoY 비교용) — latestMonth = 마지막 마감월
-const _closedMonths = D.latestMonth;  // 6 = 1~6월 마감
-const _actualClosed = D.actual.total.slice(0, _closedMonths).reduce((s,v) => s + (v||0), 0);
-const _prev2025Closed = D.prev2025.slice(0, _closedMonths).reduce((s,v) => s + (v||0), 0);
-const _targetClosed = D.target.total.slice(0, _closedMonths).reduce((s,v) => s + (v||0), 0);
-const ytdShip26  = (_actualClosed/10000).toFixed(1);
-const ytdShip25  = (_prev2025Closed/10000).toFixed(1);
-const yoyShip    = ((_actualClosed - _prev2025Closed)/_prev2025Closed*100).toFixed(1);
-// 공구: 2026 마감월(monthly[12..12+_closedMonths]) vs 2025 동월(monthly[0.._closedMonths])
-const _gongClosed26 = D.gonggu.monthly.slice(12, 12+_closedMonths).reduce((s,v)=>s+v, 0);
-const _gongClosed25 = D.gonggu.monthly.slice(0, _closedMonths).reduce((s,v)=>s+v, 0);
-const ytdGong26  = _gongClosed26.toFixed(1);
-const ytdGong25  = _gongClosed25.toFixed(1);
-const yoyGong    = ((_gongClosed26 - _gongClosed25)/_gongClosed25*100).toFixed(1);
-const ytdAchieve = (_actualClosed/_targetClosed*100).toFixed(1);
-// 총 누적 (참고용)
+// 업데이트 시점 기준 누적 (진행월 포함) — actual.total 채워진 월수
 const _ytdMonths = D.actual.total.filter(v => v !== null && v !== undefined).length;
 const _actualYTD = D.actual.total.slice(0, _ytdMonths).reduce((s,v) => s + (v||0), 0);
-const ytdTotal26 = (_actualYTD/10000 + D.gonggu.ytd2026).toFixed(1);
-document.getElementById('yoyLabel').textContent = `26 vs 25 YoY — 1~${_closedMonths}월 마감 ${ytdShip26}억 vs 2025 ${ytdShip25}억 (${yoyShip>=0?'+':''}${yoyShip}%) | ${D.latestPartialMonth}월 진행 ${(D.actual.total[D.latestPartialMonth-1]/10000).toFixed(2)}억 (~${D.latestPartialMonth}/${_reportDay})`;
+const _prev2025YTD = D.prev2025.slice(0, _ytdMonths).reduce((s,v) => s + (v||0), 0);
+const _targetYTD = D.target.total.slice(0, _ytdMonths).reduce((s,v) => s + (v||0), 0);
+const ytdShip26  = (_actualYTD/10000).toFixed(1);   // 억 (1~7월 진행)
+const ytdShip25  = (_prev2025YTD/10000).toFixed(1);
+const yoyShip    = ((_actualYTD - _prev2025YTD)/_prev2025YTD*100).toFixed(1);
+// 공구: 2026 1~진행월 vs 2025 동월
+const _gongMonths26 = D.gonggu.monthly.length - 12;  // 2026 확정된 월수
+const _gongYTD26 = D.gonggu.monthly.slice(12).reduce((s,v)=>s+v, 0);
+const _gongYTD25 = D.gonggu.monthly.slice(0, _gongMonths26).reduce((s,v)=>s+v, 0);
+const ytdGong26  = _gongYTD26.toFixed(1);
+const ytdGong25  = _gongYTD25.toFixed(1);
+const yoyGong    = ((_gongYTD26 - _gongYTD25)/_gongYTD25*100).toFixed(1);
+const ytdAchieve = (_actualYTD/_targetYTD*100).toFixed(1);
+const ytdTotal26 = (_actualYTD/10000 + _gongYTD26).toFixed(1);
+document.getElementById('yoyLabel').textContent = `26 vs 25 YoY — 1~${_ytdMonths}월 출고 ${ytdShip26}억 vs 2025 ${ytdShip25}억 (${yoyShip>=0?'+':''}${yoyShip}%) | ${D.latestPartialMonth}월 진행 ${(D.actual.total[D.latestPartialMonth-1]/10000).toFixed(2)}억 (~${D.latestPartialMonth}/${_reportDay})`;
 
 const kpis = [
-  { label: `2026 누적 출고 (1~${_closedMonths}월 마감)`, val: ytdShip26+'억', sub: `2025 1~${_closedMonths}월: ${ytdShip25}억`, delta: `<span class="${yoyShip>=0?'up':'dn'}">${yoyShip>=0?'▲':'▼'} ${yoyShip>=0?'+':''}${yoyShip}% YoY (동기간)</span>`, color: 'blue' },
+  { label: `2026 누적 출고 (1~${_ytdMonths}월)`, val: ytdShip26+'억', sub: `2025 1~${_ytdMonths}월: ${ytdShip25}억`, delta: `<span class="${yoyShip>=0?'up':'dn'}">${yoyShip>=0?'▲':'▼'} ${yoyShip>=0?'+':''}${yoyShip}% YoY</span>`, color: 'blue' },
   { label: `${D.latestPartialMonth}월 자사PB 출고 (~${_reportDay}일)`, val: (D.actual.total[D.latestPartialMonth-1]/10000).toFixed(2)+'억', sub: `건기 ${(D.actual.health[D.latestPartialMonth-1]/10000).toFixed(2)}억 + 뷰티 ${(D.actual.beauty[D.latestPartialMonth-1]/10000).toFixed(2)}억`, delta: `<span class="${(D.actual.total[D.latestPartialMonth-1]>D.prev2025[D.latestPartialMonth-1])?'up':'dn'}">전년 ${D.latestPartialMonth}월 ${(D.prev2025[D.latestPartialMonth-1]/10000).toFixed(1)}억 대비 진행중</span>`, color: 'blue' },
-  { label: `2026 누적 공구 (1~${_closedMonths}월 마감)`, val: ytdGong26+'억', sub: `2025 1~${_closedMonths}월: ${ytdGong25}억`, delta: `<span class="${yoyGong>=0?'up':'dn'}">${yoyGong>=0?'▲':'▼'} ${yoyGong>=0?'+':''}${yoyGong}% YoY (동기간)</span>`, color: 'green' },
+  { label: `2026 누적 공구 (1~${_gongMonths26}월)`, val: ytdGong26+'억', sub: `2025 1~${_gongMonths26}월: ${ytdGong25}억`, delta: `<span class="${yoyGong>=0?'up':'dn'}">${yoyGong>=0?'▲':'▼'} ${yoyGong>=0?'+':''}${yoyGong}% YoY</span>`, color: 'green' },
   { label: `${D.latestPartialMonth}월 공구 (~${_reportDay}일)`, val: D.gonggu.monthly[D.gonggu.monthly.length-1].toFixed(1)+'억', sub: `${D.latestMonth}월 마감 ${D.gonggu.monthly[D.gonggu.monthly.length-2]}억 (전월) · 진행중`, delta: '<span style="color:var(--orange)">▶ 집계중</span>', color: 'orange' },
-  { label: `출고 누적 목표달성률 (1~${_closedMonths}월)`, val: ytdAchieve+'%', sub: `목표 ${(_targetClosed/10000).toFixed(1)}억 vs 실적 ${ytdShip26}억`, delta: `<span class="${parseFloat(ytdAchieve)>=100?'up':'dn'}">${parseFloat(ytdAchieve)>=100?'▲ 초과달성':'▼ 미달'}</span>`, color: parseFloat(ytdAchieve)>=100?'green':'red' },
+  { label: `출고 누적 목표달성률 (1~${_ytdMonths}월)`, val: ytdAchieve+'%', sub: `목표 ${(_targetYTD/10000).toFixed(1)}억 vs 실적 ${ytdShip26}억`, delta: `<span class="${parseFloat(ytdAchieve)>=100?'up':'dn'}">${parseFloat(ytdAchieve)>=100?'▲ 초과달성':'▼ 미달'}</span>`, color: parseFloat(ytdAchieve)>=100?'green':'red' },
   { label: '2026 연간 목표', val: '550억', sub: `전 카테고리 합산`, delta: `<span class="neu">연간달성률 ${(_actualYTD/5500000000*100).toFixed(1)}%</span>`, color: 'purple' },
 ];
 document.getElementById('kpiGrid').innerHTML = kpis.map(k => `
