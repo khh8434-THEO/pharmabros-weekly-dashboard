@@ -57,6 +57,11 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 .week-mini-cell.sum { background: #059669; color: white; font-weight: 700; }
 
 
+/* ── SKU 비고 편집 셀 ── */
+.sku-note-cell:hover { background: #f8fafc; }
+.sku-note-cell:focus { background: #fef3c7; box-shadow: 0 0 0 2px #fbbf24 inset; }
+.sku-note-cell:empty::before { content: '메모 입력…'; color: #cbd5e1; font-style: italic; pointer-events: none; }
+
 /* ── Achievement table — sticky 첫 컬럼 ── */
 #achieveTable th, #achieveTable td { white-space: nowrap; padding: 8px 10px; }
 .achieve-fixed { 
@@ -93,6 +98,15 @@ thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 }
 #pharmTable thead th:nth-child(1), #pharmTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #pharmTable tr[style*="background:#f1f5f9"] td:first-child { background: #f1f5f9 !important; }
+
+/* ── 약사 표: 좁은 컬럼 폭 압축 (공백 최소화) ── */
+#pharmTable th:nth-child(3), #pharmTable td:nth-child(3) { width: 70px; min-width: 70px; max-width: 80px; white-space: nowrap; }  /* 닉네임 */
+#pharmTable th:nth-child(4), #pharmTable td:nth-child(4) { width: 40px; min-width: 40px; max-width: 50px; text-align: center; }  /* 기수 */
+#pharmTable th:nth-child(5), #pharmTable td:nth-child(5) { width: 75px; min-width: 75px; max-width: 85px; }  /* 2026 누적 */
+#pharmTable th:nth-child(n+6):nth-child(-n+12), #pharmTable td:nth-child(n+6):nth-child(-n+12) { width: 58px; min-width: 58px; max-width: 68px; }  /* 1월~7월 */
+#pharmTable th:nth-child(13), #pharmTable td:nth-child(13) { width: 180px; min-width: 180px; max-width: 220px; }  /* 주간실적 */
+#pharmTable th:nth-child(14), #pharmTable td:nth-child(14) { width: 80px; min-width: 80px; max-width: 90px; }  /* 건당 평균 */
+#pharmTable td { padding: 6px 8px !important; }
 
 /* ── 브랜드 표: # + 브랜드 컬럼 sticky ── */
 #brandTable th:nth-child(1), #brandTable td:nth-child(1) {
@@ -420,45 +434,45 @@ const D = {
   // ── 섹션 3-1. SKU 판매량 ──────────────────────────────────
   // [품명, 재고수량(재고관리_Master 4/28기준), 1월, 2월, 3월, 4월, 발주비고]
   sku: [
-    ["폴라초임계오메가3",                    13313,  8603,  6853, 10749,  8150,  7960,  8536,  9727, "2026-05-11 50,657개 입고예정"],
-    ["알래스카순수오메가31100",                   5,  9641,  9343,  2433,   125,     5,     0,     2, "🔴 재고 5개 — 즉시 발주"],
-    ["마시는마그네슘200",                    8576,  6841,  1165,  8898,  1983,  6370,  5170,  3258, "5/12 6/05 12,300개 입고예정"],
-    ["이뮨빌베리",                         3882,  4939,  7606,  1952,  1306,  2341,   514,    189, "✅ 발주확정"],
-    ["액티브비큐텐",                        9020,  2957,  4955,  4189,  4872,  3817,  3960,  4008, "2026-06-19 10,000개 입고예정"],
+    ["폴라초임계오메가3",                    13313,  8603,  6853, 10749,  8150,  7960,  8536,  9727, ""],
+    ["알래스카순수오메가31100",                   5,  9641,  9343,  2433,   125,     5,     0,     2, ""],
+    ["마시는마그네슘200",                    8576,  6841,  1165,  8898,  1983,  6370,  5170,  3258, ""],
+    ["이뮨빌베리",                         3882,  4939,  7606,  1952,  1306,  2341,   514,    189, ""],
+    ["액티브비큐텐",                        9020,  2957,  4955,  4189,  4872,  3817,  3960,  4008, ""],
     ["트룰리알티지오메가3",                   12467,    22,  9918,  4400,  2239,    80,    93,  6893, ""],
-    ["마그듀오 K2",                      11178,  3554,  2658,  3498,  4053,  2690,  2851,  4225, "2026-06-24 10,000개 입고예정"],
-    ["파이토레드큐민",                       2057,  3566,  1591,  2811,  4364,  2264,  2555,  3149, "✅ 2026-05-22 5,000개 입고예정"],
-    ["썬비타민D3&K2",                     3168,  1684,  2476,  1601,  1836,  2013,  1851,   1046, "2026-05-08 10,000개 입고예정"],
-    ["프로바이오에스엘비",                     5417,  1608,  2160,  1605,  1708,  2521,  2303,  2224, "2026-06-24 6,000개 입고예정"],
-    ["D를담다츄어블2000IU",                 3785,  6887,     3,    43,  6386,   140,   165,  2874, "발주 5,000개 진행중"],
+    ["마그듀오 K2",                      11178,  3554,  2658,  3498,  4053,  2690,  2851,  4225, ""],
+    ["파이토레드큐민",                       2057,  3566,  1591,  2811,  4364,  2264,  2555,  3149, ""],
+    ["썬비타민D3&K2",                     3168,  1684,  2476,  1601,  1836,  2013,  1851,   1046, ""],
+    ["프로바이오에스엘비",                     5417,  1608,  2160,  1605,  1708,  2521,  2303,  2224, ""],
+    ["D를담다츄어블2000IU",                 3785,  6887,     3,    43,  6386,   140,   165,  2874, ""],
     ["와일드알래스카오메가3미니",                 4110,  2130,   282,   227,  1309,   204,  1623,   446, ""],
-    ["유한혈당케어여주",                      6722,  4088,  2137,   317,   567,   281,  2191,  2342, "2026-06-05 15,000개 입고예정"],
+    ["유한혈당케어여주",                      6722,  4088,  2137,   317,   567,   281,  2191,  2342, ""],
     ["알래스카순수오메가3600미니",               9784,   201,  2124,  1982,   758,  1489,   285,   281, ""],
-    ["퓨어리포좀비타민C",                     4394,  2460,   851,   802,  1852,  1005,   847,  1606, "✅ 2026-07-17 10,000개 입고예정"],
-    ["튼튼리포좀비타민C아연",                      0,     0,     0,     0,     0,     0,     0,     217, "🔴 재고 0 | 발주 8,000개 (5월 11일 주차)"],
-    ["코랄칼마디 K2",                      7310,  1815,   945,  1038,  1043,  2899,  1359,  1318, "2026-04-28 4,873개 입고예정"],
-    ["오큐클리어",                         2988,  1033,  1672,  1067,   966,  1447,   947,   902, "2026-06-19 5,000개 입고예정"],
-    ["풀스펙멀티비타민",                      1771,   584,  1354,  1420,   605,  1248,  2310,   592, "2026-05-15 5,000개 입고예정"],
+    ["퓨어리포좀비타민C",                     4394,  2460,   851,   802,  1852,  1005,   847,  1606, ""],
+    ["튼튼리포좀비타민C아연",                      0,     0,     0,     0,     0,     0,     0,     217, ""],
+    ["코랄칼마디 K2",                      7310,  1815,   945,  1038,  1043,  2899,  1359,  1318, ""],
+    ["오큐클리어",                         2988,  1033,  1672,  1067,   966,  1447,   947,   902, ""],
+    ["풀스펙멀티비타민",                      1771,   584,  1354,  1420,   605,  1248,  2310,   592, ""],
     ["퓨어리포좀글루타치온",                    6497,   343,   740,  1481,   247,   530,  1567,   492, ""],
     ["폴라초임계오메가3 밸류팩",                 5776,   674,  1062,    91,   808,   712,   452,   589, ""],
     ["피크노제놀 큐텐",                           8445,     0,    13,   658,   714,  3219,  2567,   838, ""],
     ["테라큐민 프라임 70",                        2511,   643,   320,  1323,  1322,   846,  1706,  1763, ""],
     ["퓨어 레드큐민",                           11052,   503,   513,   969,  1559,   758,   901,   1460, ""],
     ["코엔자임 Q10",                           4397,   817,  1020,   526,   281,   815,   814,  1391, ""],
-    ["초임계알티지오메가31000",                    19907,     0,     0,     0,    21,    31,  1702,  2530, "2026-04-28 24,000개 입고예정"],
+    ["초임계알티지오메가31000",                    19907,     0,     0,     0,    21,    31,  1702,  2530, ""],
     ["비타민D 츄어블2000IU",                     5488,     0,     0,     0,  1328,  1411,   853,   396, ""],
     ["테라큐민 부스터 100",                       5010,   368,   204,   565,   600,   432,   716,   721, ""],
     ["활성형엽산 800",                          5020,     0,     0,     0,    27,  2001,  1197,    1657, ""],
     ["혈당 내르베텐",                            5136,   216,    98,   235,   151,   343,  1441,   814, ""],
-    ["오늘도 맑아연",                               0,     0,     0,     0,    10,  2977,     8,   1735, "2026-04-28 3,000개 입고예정"],
+    ["오늘도 맑아연",                               0,     0,     0,     0,    10,  2977,     8,   1735, ""],
     ["액티브헴철",                              3404,   521,    25,   623,   785,   268,   283,   785, ""],
     ["리포좀비타민C맥스1000",                      1056,   457,   272,   531,   232,   410,   643,   509, ""],
     ["트리플 빌베리",                            1920,   222,   555,    42,   192,   174,   966,    96, ""],
     ["속편한 위장케어",                           1494,   315,   250,   247,   291,   682,   177,   157, ""],
     ["콜라겐 비오틴 듀오",                         3017,   377,   688,   118,    55,   389,   339,    99, ""],
-    ["포스트바이오틱스 GX",                        1330,   205,   171,   316,   396,   492,   410,    47, "2026-07-26 7,000개 입고예정"],
+    ["포스트바이오틱스 GX",                        1330,   205,   171,   316,   396,   492,   410,    47, ""],
     ["라이버 맥주효모",                           1269,   320,   103,   115,   167,   107,   917,   185, ""],
-    ["칼마디K2 미네랄",                             0,     0,     0,     0,     0,     6,  1457,   785, "5월 중 6,700개 입고예정"],
+    ["칼마디K2 미네랄",                             0,     0,     0,     0,     0,     6,  1457,   785, ""],
     ["CBP 락토페린 플러스",                       3989,    20,     1,    35,   761,   528,   216,   367, ""],
     ["간케어 나노 밀크씨슬",                        3768,    84,   147,   315,   315,   122,   518,   225, ""],
     ["데일리 이뮨 C&D",                         3157,   780,   124,    50,   432,    60,    42,   465, ""],
@@ -1707,7 +1721,7 @@ const D = {
       <span class="card-note">공구 기준 · 실매출(취소 제외)</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table" id="pharmTable" style="min-width:1500px">
+      <table class="data-table" id="pharmTable" style="min-width:1200px">
         <thead><tr>
           <th>#</th><th>약사</th><th>닉네임</th><th>기수</th>
           <th class="num">2026 누적</th>
@@ -2081,24 +2095,16 @@ invBox.innerHTML = lowInv.length === 0
 // SKU table
 const skuBody = document.getElementById('skuTableBody');
 const skuFoot = document.getElementById('skuTableFoot');
-// 비고 렌더링 헬퍼 — 과거 입고예정일 자동 감지
-const _reportDateObj = (() => {
-  const m = D.reportDate.match(/(\d{4})년\s*(\d+)월\s*(\d+)일/);
-  return m ? new Date(+m[1], +m[2]-1, +m[3]) : new Date();
-})();
-function _renderNote(note) {
-  if (!note) return '';
-  // 날짜 패턴 감지 (2026-05-11 또는 5/12 등)
-  const iso = note.match(/(\d{4})-(\d{1,2})-(\d{1,2})/);
-  const short = !iso ? note.match(/(?<!\d)(\d{1,2})\/(\d{1,2})(?!\d)/) : null;
-  let noteDate = null;
-  if (iso) noteDate = new Date(+iso[1], +iso[2]-1, +iso[3]);
-  else if (short) noteDate = new Date(_reportDateObj.getFullYear(), +short[1]-1, +short[2]);
-  if (noteDate && noteDate < _reportDateObj) {
-    // 과거 날짜 — 회색 처리 + 지연 표시 (완료된 발주는 제거하는 게 나을 수도)
-    return `<span style="color:#94a3b8;text-decoration:line-through" title="입고예정일 경과 (재고관리 시트 미갱신)">${note}</span> <span style="color:#ea580c;font-size:10px">⚠️</span>`;
-  }
-  return `<span style="color:var(--orange)">${note}</span>`;
+// SKU 비고 — 사용자 편집 가능 (localStorage 저장)
+const _NOTE_KEY = 'sku_notes_v1';
+function _loadNotes(){ try { return JSON.parse(localStorage.getItem(_NOTE_KEY) || '{}'); } catch(e){ return {}; } }
+function _getNote(sku){ const n = _loadNotes(); return (n[sku]||'').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function _saveNote(el){
+  const sku = el.getAttribute('data-sku-note');
+  const val = el.innerText.trim();
+  const n = _loadNotes();
+  if (val) n[sku] = val; else delete n[sku];
+  localStorage.setItem(_NOTE_KEY, JSON.stringify(n));
 }
 
 let totals = [0,0,0,0,0,0,0,0,0,0];
@@ -2126,7 +2132,7 @@ skuBody.innerHTML = _skuSorted.map((r,i)=>{
     <td class="num" style="font-weight:600"><span class="cell-link" onclick="openSkuChannel('${r[0]}','ytd')">${sum6.toLocaleString()}</span></td>
     <td class="num">${Number(avg).toLocaleString()}</td>
     <td style="color:${tColor};font-weight:700;font-size:14px">${trend}</td>
-    <td style="font-size:11px">${_renderNote(r[9]||'')}</td>
+    <td style="font-size:11px;padding:2px 4px !important"><div contenteditable="true" data-sku-note="${r[0].replace(/\"/g,'&quot;')}" class="sku-note-cell" oninput="_saveNote(this)" onblur="_saveNote(this)" spellcheck="false" style="min-height:22px;padding:4px 6px;border-radius:4px;font-size:11px;color:#334155;outline:none;cursor:text">${_getNote(r[0])}</div></td>
   </tr>`;
 }).join('');
 skuFoot.innerHTML = `<tr class="total-row">
