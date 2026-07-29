@@ -73,18 +73,26 @@ body { background: var(--bg); color: var(--text); font-family: 'Noto Sans KR', s
 }
 thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 
-/* ── SKU 표: # + 품명 컬럼 sticky (데스크톱: 자연 폭) ── */
+/* ── SKU 표: # + 품명 컬럼 sticky (폭 압축, 잉여 공백 최소화) ── */
 #skuTable th:nth-child(1), #skuTable td:nth-child(1) {
   position: sticky; left: 0; z-index: 3; background: var(--white);
-  min-width: 28px;
+  width: 28px; min-width: 28px; max-width: 28px;
 }
 #skuTable th:nth-child(2), #skuTable td:nth-child(2) {
   position: sticky; left: 28px; z-index: 3; background: var(--white);
   white-space: nowrap;
+  width: 165px; min-width: 165px; max-width: 180px;
   box-shadow: 2px 0 0 var(--border);
 }
 #skuTable thead th:nth-child(1), #skuTable thead th:nth-child(2) { background: #fafbfc; z-index: 4; }
 #skuTable tr.total-row td[colspan="2"] { position: sticky; left: 0; z-index: 3; background: #f1f5f9; }
+/* SKU 표 나머지 컬럼 폭 압축 + 비고 확대 */
+#skuTable th:nth-child(3), #skuTable td:nth-child(3) { width: 70px; min-width: 70px; max-width: 80px; }  /* 재고 */
+#skuTable th:nth-child(n+4):nth-child(-n+10), #skuTable td:nth-child(n+4):nth-child(-n+10) { width: 65px; min-width: 65px; max-width: 75px; }  /* 1~7월 */
+#skuTable th:nth-child(11), #skuTable td:nth-child(11) { width: 75px; min-width: 75px; max-width: 85px; }  /* 1~6월 합계 */
+#skuTable th:nth-child(12), #skuTable td:nth-child(12) { width: 65px; min-width: 65px; max-width: 75px; }  /* 월평균 */
+#skuTable th:nth-child(13), #skuTable td:nth-child(13) { width: 40px; min-width: 40px; max-width: 50px; }  /* 추이 */
+#skuTable th:nth-child(14), #skuTable td:nth-child(14) { width: 260px; min-width: 260px; }  /* 비고 (확대) */
 
 /* ── 약사 표: # + 약사 컬럼 sticky ── */
 #pharmTable th:nth-child(1), #pharmTable td:nth-child(1) {
