@@ -1334,8 +1334,8 @@ const D = {
           <th class="num">5월</th>
           <th class="num">6월</th>
           <th class="num">7월</th>
-          <th class="num" style="color:var(--orange)">8월(~5일)</th>
-          <th class="num">1~7월 합계</th>
+          <th class="num partial-month-hdr" style="color:var(--orange)">8월(~5일)</th>
+          <th class="num ytd-sum-hdr">1~7월 합계</th>
           <th class="num">월평균</th>
           <th>추이</th>
           <th>비고</th>
@@ -1398,7 +1398,7 @@ const D = {
         <thead><tr>
           <th>#</th><th>약사</th><th>닉네임</th><th>기수</th>
           <th class="num">2026 누적</th>
-          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num" style="color:var(--orange)">8월(~5일)</th>
+          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num partial-month-hdr" style="color:var(--orange)">8월(~5일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
         </tr></thead>
         <tbody id="pharmTableBody"></tbody>
@@ -1441,7 +1441,7 @@ const D = {
           <th class="num">2026 누적</th><th class="num">비중</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
           <th class="num">4월</th>
-          <th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num" style="color:var(--orange)">8월(~5일)</th>
+          <th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num partial-month-hdr" style="color:var(--orange)">8월(~5일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (20~23주)</th><th>추이</th>
         </tr></thead>
         <tbody id="brandTableBody"></tbody>
@@ -1452,7 +1452,7 @@ const D = {
   <!-- ── SECTION 4-4: 공구 제품 TOP 30 ── -->
   <div class="card" style="margin-top:14px">
     <div class="card-header">
-      <span class="card-title">공구 제품 TOP 30 (2026 1~7월 누적)</span>
+      <span class="card-title top30-title">공구 제품 TOP 30 (2026 1~7월 누적)</span>
       <span class="card-note">제품별 합계 순매출 · 진행 약사 닉네임 표기 · ↔ 좌우 스크롤</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto;max-height:700px;overflow-y:auto">
@@ -2137,7 +2137,9 @@ function _loadComments(key) {
 const _CHART_COLORS = ['#2563eb','#16a34a','#ea580c','#7c3aed','#f59e0b','#06b6d4','#ec4899','#84cc16'];
 const _GRID = '#e4e7ed';
 const _MLAB7 = ['1월','2월','3월','4월','5월','6월','7월'];
-const _MLAB8 = ['1월','2월','3월','4월','5월','6월','7월','8월(~5일)'];
+// _MLAB8은 D.reportDate로 동적 생성 (매주 자동 갱신)
+const _partialLabel = `${D.latestPartialMonth}월(~${_reportDay}일)`;
+const _MLAB8 = ['1월','2월','3월','4월','5월','6월','7월', _partialLabel];
 const _MLAB6 = ['1월','2월','3월','4월','5월','6월'];
 const _MLAB5 = ['1월','2월','3월','4월','5월'];
 const _MLAB4 = ['1월','2월','3월','4월 마감'];
@@ -2682,6 +2684,19 @@ function openSkuChannel(sku, monthKey){
   modal.style.display = 'flex';
 }
 
+
+// ── 라벨 자동 갱신 (매주 reportDate만 바꾸면 모두 자동) ──
+(function autoUpdateLabels(){
+  const partialLabel = _partialLabel;  // "8월(~12일)"
+  const closedMonth = D.latestMonth;
+  const partMonth = D.latestPartialMonth;
+  // 진행중 월 헤더 (SKU/약사/브랜드 표)
+  document.querySelectorAll('.partial-month-hdr').forEach(el => { el.textContent = partialLabel; });
+  // SKU 표 합계 라벨 (1~7월 합계 → 마감월 반영)
+  document.querySelectorAll('.ytd-sum-hdr').forEach(el => { el.textContent = `1~${closedMonth}월 합계`; });
+  // TOP 30 title
+  document.querySelectorAll('.top30-title').forEach(el => { el.textContent = `공구 제품 TOP 30 (2026 1~${closedMonth}월 누적)`; });
+})();
 </script>
 
 <!-- ── Detail Modal HTML ── -->
