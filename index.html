@@ -88,11 +88,11 @@ thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 #skuTable tr.total-row td[colspan="2"] { position: sticky; left: 0; z-index: 3; background: #f1f5f9; }
 /* SKU 표 나머지 컬럼 폭 압축 + 비고 확대 */
 #skuTable th:nth-child(3), #skuTable td:nth-child(3) { width: 70px; min-width: 70px; max-width: 80px; }  /* 재고 */
-#skuTable th:nth-child(n+4):nth-child(-n+11), #skuTable td:nth-child(n+4):nth-child(-n+11) { width: 62px; min-width: 62px; max-width: 72px; }  /* 1~8월 (8개) */
-#skuTable th:nth-child(12), #skuTable td:nth-child(12) { width: 78px; min-width: 78px; max-width: 88px; }  /* 1~7월 합계 */
-#skuTable th:nth-child(13), #skuTable td:nth-child(13) { width: 62px; min-width: 62px; max-width: 72px; }  /* 월평균 */
-#skuTable th:nth-child(14), #skuTable td:nth-child(14) { width: 38px; min-width: 38px; max-width: 48px; }  /* 추이 */
-#skuTable th:nth-child(15), #skuTable td:nth-child(15) { width: 260px; min-width: 260px; }  /* 비고 (확대) */
+#skuTable th:nth-child(n+4):nth-child(-n+12), #skuTable td:nth-child(n+4):nth-child(-n+12) { width: 58px; min-width: 58px; max-width: 68px; }  /* 1~9월 (9개) */
+#skuTable th:nth-child(13), #skuTable td:nth-child(13) { width: 78px; min-width: 78px; max-width: 88px; }  /* 1~8월 합계 */
+#skuTable th:nth-child(14), #skuTable td:nth-child(14) { width: 62px; min-width: 62px; max-width: 72px; }  /* 월평균 */
+#skuTable th:nth-child(15), #skuTable td:nth-child(15) { width: 38px; min-width: 38px; max-width: 48px; }  /* 추이 */
+#skuTable th:nth-child(16), #skuTable td:nth-child(16) { width: 260px; min-width: 260px; }  /* 비고 (확대) */
 
 /* ── 약사 표: # + 약사 컬럼 sticky ── */
 #pharmTable th:nth-child(1), #pharmTable td:nth-child(1) {
@@ -111,9 +111,9 @@ thead .achieve-fixed { background: #fafbfc; z-index: 4; }
 #pharmTable th:nth-child(3), #pharmTable td:nth-child(3) { width: 70px; min-width: 70px; max-width: 80px; white-space: nowrap; }  /* 닉네임 */
 #pharmTable th:nth-child(4), #pharmTable td:nth-child(4) { width: 40px; min-width: 40px; max-width: 50px; text-align: center; }  /* 기수 */
 #pharmTable th:nth-child(5), #pharmTable td:nth-child(5) { width: 75px; min-width: 75px; max-width: 85px; }  /* 2026 누적 */
-#pharmTable th:nth-child(n+6):nth-child(-n+13), #pharmTable td:nth-child(n+6):nth-child(-n+13) { width: 54px; min-width: 54px; max-width: 64px; }  /* 1월~8월 (8개) */
-#pharmTable th:nth-child(14), #pharmTable td:nth-child(14) { width: 180px; min-width: 180px; max-width: 220px; }  /* 주간실적 */
-#pharmTable th:nth-child(15), #pharmTable td:nth-child(15) { width: 80px; min-width: 80px; max-width: 90px; }  /* 건당 평균 */
+#pharmTable th:nth-child(n+6):nth-child(-n+14), #pharmTable td:nth-child(n+6):nth-child(-n+14) { width: 52px; min-width: 52px; max-width: 62px; }  /* 1월~9월 (9개) */
+#pharmTable th:nth-child(15), #pharmTable td:nth-child(15) { width: 180px; min-width: 180px; max-width: 220px; }  /* 주간실적 */
+#pharmTable th:nth-child(16), #pharmTable td:nth-child(16) { width: 80px; min-width: 80px; max-width: 90px; }  /* 건당 평균 */
 #pharmTable td { padding: 6px 8px !important; }
 
 /* ── 브랜드 표: # + 브랜드 컬럼 sticky ── */
@@ -1322,7 +1322,7 @@ const D = {
       <span class="card-note">재고 = 현재고 | 월별 판매량 기준 · ↔ 좌우 스크롤</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table" id="skuTable" style="min-width:1100px">
+      <table class="data-table" id="skuTable" style="min-width:1170px">
         <thead><tr>
           <th style="width:30px">#</th>
           <th>품명</th>
@@ -1395,7 +1395,7 @@ const D = {
       <span class="card-note">공구 기준 · 실매출(취소 제외)</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table" id="pharmTable" style="min-width:1260px">
+      <table class="data-table" id="pharmTable" style="min-width:1310px">
         <thead><tr>
           <th>#</th><th>약사</th><th>닉네임</th><th>기수</th>
           <th class="num">2026 누적</th>
@@ -1436,7 +1436,7 @@ const D = {
       <span class="card-note">취소율 5% 이상 주의</span>
     </div>
     <div class="card-body" style="padding:0;overflow-x:auto">
-      <table class="data-table" id="brandTable" style="min-width:1350px">
+      <table class="data-table" id="brandTable" style="min-width:1400px">
         <thead><tr>
           <th>#</th><th>브랜드</th>
           <th class="num">2026 누적</th><th class="num">비중</th>
