@@ -1682,24 +1682,23 @@ new Chart(document.getElementById('mainTrendChart'), {
   options: { ...baseOpts(v=>v+'억'), plugins: { legend: { display: true, position:'top', labels: { boxWidth:10, font:{size:11}, color:'#8b91a0' } } } }
 });
 
-// Cat pie
-const validCats = cats.filter(c=>{
-  const ytd = [0,1,2,3].reduce((s,m)=>s+(c.a[m]||0),0);
-  return ytd > 0 && c.name !== '합계';
-});
+// Cat pie — 연간 누적 (null 아닌 모든 월 합)
+const _catYtdMonths = Array.from({length:12}, (_,i)=>i);  // 1~12월 index
+const _catSum = c => _catYtdMonths.reduce((s,m)=>s+(c.a[m]||0),0);
+const validCats = cats.filter(c=> _catSum(c) > 0 && c.name !== '합계');
 const catColors = ['#2563eb','#16a34a','#ea580c','#7c3aed'];
 new Chart(document.getElementById('catPieChart'), {
   type: 'doughnut',
   data: {
     labels: validCats.map(c=>c.name),
-    datasets: [{ data: validCats.map(c=>[0,1,2,3].reduce((s,m)=>s+(c.a[m]||0),0)/10000), backgroundColor: catColors, borderWidth: 0 }]
+    datasets: [{ data: validCats.map(c=>_catSum(c)/10000), backgroundColor: catColors, borderWidth: 0 }]
   },
   options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{display:false} }, cutout:'62%' }
 });
 document.getElementById('catLegend').innerHTML = validCats.map((c,i)=>{
-  const ytd = [0,1,2,3].reduce((s,m)=>s+(c.a[m]||0),0)/10000;
-  const total = validCats.reduce((s,cc)=>s+[0,1,2,3].reduce((ss,m)=>ss+(cc.a[m]||0),0),0)/10000;
-  return `<div style="display:flex;justify-content:space-between;align-items:center"><span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:${catColors[i]};display:inline-block"></span>${c.name}</span><span style="font-weight:600">${ytd.toFixed(0)}억 <span style="color:var(--muted)">(${(ytd/total*100).toFixed(1)}%)</span></span></div>`;
+  const ytd = _catSum(c)/10000;
+  const total = validCats.reduce((s,cc)=>s+_catSum(cc),0)/10000;
+  return `<div style="display:flex;justify-content:space-between;align-items:center"><span style="display:flex;align-items:center;gap:5px"><span style="width:8px;height:8px;border-radius:2px;background:${catColors[i]};display:inline-block"></span>${c.name}</span><span style="font-weight:600">${ytd.toFixed(1)}억 <span style="color:var(--muted)">(${(ytd/total*100).toFixed(1)}%)</span></span></div>`;
 }).join('');
 
 // Channel chart
