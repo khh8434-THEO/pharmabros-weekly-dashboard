@@ -404,8 +404,8 @@ const D = {
     mcn:    [0, 0, 1000, 3000, 6000, 10000, 15000, 20000, 40000, 60000, 100000, 45000],
   },
   actual: {
-    total:    [402836, 370847, 396947, 304238, 421719, 389925, 378590, 359948, 154136, 76875, null, null],
-    health:   [402420, 369251, 392246, 299030, 399304, 368095, 363626, 332432, 154136, 76875, null, null],
+    total:    [402836, 370847, 396947, 304238, 421719, 389925, 378590, 359948, 164482, 80413, null, null],
+    health:   [402420, 369251, 392246, 299030, 399304, 368095, 363626, 332432, 164482, 80413, null, null],
     beauty:   [416, 354, 4541, 3537, 6044, 10654, 7643, 3843, 0, 0, null, null],
     global:   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null],
     pharmacy: [0, 872, 30, 280, 11600, 3736, 2875, 6066, 0, 0, null, null],
@@ -413,8 +413,8 @@ const D = {
   },
   // 전년 실적 (만원) — 2025년 월별
   prev2025: [303656, 280040, 310121, 302000, 278721, 274301, 255950, 296271, 330897, 220548, 424625, 246530],
-  // 2026 월별 자사PB 출고만 (한독·시오레 제외, 만원) — raw 실측
-  actualPB: [173154, 192021, 142443, 127057, 128240, 136316, 167118, 121304, 154136, 76875, null, null],
+  // 2026 월별 자사PB 출고 (한독·시오레 제외 · 로켓그로스 포함, 만원) — raw 실측
+  actualPB: [185262, 203041, 155038, 138992, 135212, 149947, 178758, 135203, 164482, 80413, null, null],
   // 전년 자사PB 출고만 (한독·시오레 제외, 만원) — raw 실측
   prev2025PB: [90533, 95852, 87113, 85833, 87925, 73872, 78396, 98075, 124175, 88232, 145113, 114690],
   // 2026 YTD 목표/실적 (만원) — KPI용
@@ -1576,9 +1576,9 @@ const kpis = [
   // 1) 누적 매출액 + 목표달성률 (합체)
   { label: `2026 누적 매출액 (1~${_ytdMonths}월)`, val: ytdShip26+'억', sub: `2025 1~${_ytdMonths}월: ${ytdShip25}억 · 목표 ${(_targetYTD/10000).toFixed(1)}억`, delta: `<span class="${yoyShip>=0?'up':'dn'}">${yoyShip>=0?'▲':'▼'} ${yoyShip>=0?'+':''}${yoyShip}% YoY</span> · <span class="${parseFloat(ytdAchieve)>=100?'up':'dn'}">달성률 ${ytdAchieve}%</span>`, color: 'blue' },
   // 2) [신규] 누적 자사PB 출고 매출액
-  { label: `2026 누적 자사PB 출고 (1~${_ytdMonths}월)`, val: ytdPB26+'억', sub: `2025 1~${_ytdMonths}월 PB: ${ytdPB25}억 (한독·시오레 제외)`, delta: `<span class="${yoyPB>=0?'up':'dn'}">${yoyPB>=0?'▲':'▼'} ${yoyPB>=0?'+':''}${yoyPB}% YoY</span>`, color: 'blue' },
+  { label: `2026 누적 자사PB 출고 (1~${_ytdMonths}월)`, val: ytdPB26+'억', sub: `2025 1~${_ytdMonths}월 PB: ${ytdPB25}억 (한독·시오레 제외 · 로켓그로스 포함)`, delta: `<span class="${yoyPB>=0?'up':'dn'}">${yoyPB>=0?'▲':'▼'} ${yoyPB>=0?'+':''}${yoyPB}% YoY</span>`, color: 'blue' },
   // 3) 7월 자사PB 출고 (기존 카드2 우측 이동)
-  { label: `${D.latestPartialMonth}월 자사PB 출고 (~${_reportDay}일)`, val: (D.actualPB[D.latestPartialMonth-1] != null ? (D.actualPB[D.latestPartialMonth-1]/10000).toFixed(2)+'억' : '집계 대기'), sub: (D.actualPB[D.latestPartialMonth-1] != null ? `한독·시오레 제외 · 출고일 기준` : '매출 raw 미갱신'), delta: (D.actualPB[D.latestPartialMonth-1] != null ? `<span class="${(D.actualPB[D.latestPartialMonth-1]>D.prev2025PB[D.latestPartialMonth-1])?'up':'dn'}">전년 ${D.latestPartialMonth}월 PB출고 ${(D.prev2025PB[D.latestPartialMonth-1]/10000).toFixed(1)}억 대비 진행중</span>` : `<span style="color:var(--muted)">전년 ${D.latestPartialMonth}월 PB출고 ${(D.prev2025PB[D.latestPartialMonth-1]/10000).toFixed(1)}억</span>`), color: 'blue' },
+  { label: `${D.latestPartialMonth}월 자사PB 출고 (~${_reportDay}일)`, val: (D.actualPB[D.latestPartialMonth-1] != null ? (D.actualPB[D.latestPartialMonth-1]/10000).toFixed(2)+'억' : '집계 대기'), sub: (D.actualPB[D.latestPartialMonth-1] != null ? `한독·시오레 제외 · 로켓그로스 포함 · 출고일 기준` : '매출 raw 미갱신'), delta: (D.actualPB[D.latestPartialMonth-1] != null ? `<span class="${(D.actualPB[D.latestPartialMonth-1]>D.prev2025PB[D.latestPartialMonth-1])?'up':'dn'}">전년 ${D.latestPartialMonth}월 PB출고 ${(D.prev2025PB[D.latestPartialMonth-1]/10000).toFixed(1)}억 대비 진행중</span>` : `<span style="color:var(--muted)">전년 ${D.latestPartialMonth}월 PB출고 ${(D.prev2025PB[D.latestPartialMonth-1]/10000).toFixed(1)}억</span>`), color: 'blue' },
   // 4) 2026 누적 공구 (기존 카드3 우측 이동)
   { label: `2026 누적 공구 (1~${_gongMonths26}월)`, val: ytdGong26+'억', sub: `2025 1~${_gongMonths26}월: ${ytdGong25}억`, delta: `<span class="${yoyGong>=0?'up':'dn'}">${yoyGong>=0?'▲':'▼'} ${yoyGong>=0?'+':''}${yoyGong}% YoY</span>`, color: 'green' },
   // 5) 7월 공구 (기존 카드4 우측 이동)
