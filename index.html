@@ -389,7 +389,7 @@ const D = {
   // ── 기준 정보 ────────────────────────────────────────────
   reportDate: "2026년 10월 28일",
   reportWeek: "2026년 44주차",
-  baseNote: "기준: 출고기준(사용자제공+raw) | 9월 마감 74.30억(공구·전체브랜드) | 10월 진행중 (~10/28)",
+  baseNote: "기준: 출고기준 | 1~9월 회계마감(VAT포함 환산) · 10~11월 매출기준 | 9월 마감 74.30억(공구·전체브랜드) | 10월 진행중 (~10/28)",
   latestMonth: 9,          // 9월 마감
   latestPartialMonth: 10,  // 10월 진행중
 
@@ -404,17 +404,17 @@ const D = {
     mcn:    [0, 0, 1000, 3000, 6000, 10000, 15000, 20000, 40000, 60000, 100000, 45000],
   },
   actual: {
-    total:    [402836, 370847, 396947, 304238, 421719, 389925, 378590, 359948, 388614, 145780, null, null],
-    health:   [402420, 369251, 392246, 299030, 399304, 368095, 363626, 332432, 371045, 145780, null, null],
-    beauty:   [416, 354, 4541, 3537, 6044, 10654, 7643, 3843, 3130, 0, null, null],
+    total:    [443120, 407932, 436642, 334662, 463891, 428918, 416449, 395943, 427475, 145780, null, null],
+    health:   [442662, 406176, 431471, 328933, 439234, 404905, 399989, 365675, 408150, 145780, null, null],
+    beauty:   [458, 389, 4995, 3891, 6648, 11719, 8407, 4227, 3443, 0, null, null],
     global:   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null],
-    pharmacy: [0, 872, 30, 280, 11600, 3736, 2875, 6066, 4731, 0, null, null],
-    mcn:      [0, 370, 130, 1391, 4771, 7440, 4446, 17607, 9708, 0, null, null],
+    pharmacy: [0, 959, 33, 308, 12760, 4110, 3163, 6673, 5204, 0, null, null],
+    mcn:      [0, 407, 143, 1530, 5248, 8184, 4891, 19368, 10679, 0, null, null],
   },
   // 전년 실적 (만원) — 2025년 월별
   prev2025: [303656, 280040, 310121, 302000, 278721, 274301, 255950, 296271, 330897, 220548, 424625, 246530],
   // 2026 월별 자사PB 출고 (한독·시오레 제외 · 로켓그로스 포함, 만원) — raw 실측
-  actualPB: [185262, 203041, 155038, 138992, 135212, 149947, 178758, 135203, 164482, 145780, null, null],
+  actualPB: [203788, 223345, 170542, 152891, 148733, 164942, 196634, 148723, 180930, 145780, null, null],
   // 전년 자사PB 출고만 (한독·시오레 제외, 만원) — raw 실측
   prev2025PB: [90533, 95852, 87113, 85833, 87925, 73872, 78396, 98075, 124175, 88232, 145113, 114690],
   // 2026 YTD 목표/실적 (만원) — KPI용
@@ -1253,8 +1253,8 @@ const D = {
             <span style="margin-right:6px">💰</span>① 매출 실적
           </div>
           <div style="font-size:15px;line-height:1.75;color:var(--text)">
-            <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">누적 매출 355.9억(목표 439.5억·달성 81.0%)</span>으로
-            전년 동기 대비 <b style="color:#059669">+24.8% 성장</b>을 지속,
+            <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">누적 매출 390.1억(목표 439.5억·달성 88.8%)</span>으로
+            전년 동기 대비 <b style="color:#059669">+36.8% 성장</b>을 지속,
             10월(~28일)은 <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">PB 출고 기준 14.58억</span>으로
             전년 동월(8.82억)의 <b style="color:#059669">165.2%</b>를 기록하며 <b>전년 월 실적을 상회</b> 중.
           </div>
@@ -1266,9 +1266,9 @@ const D = {
             <span style="margin-right:6px">🏷️</span>② 자사PB 성장
           </div>
           <div style="font-size:15px;line-height:1.75;color:var(--text)">
-            <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">자사PB(한독·시오레 제외, 로켓그로스 포함) 159.2억</span>은
-            전년 91.0억 대비 <b style="color:#059669">YoY +74.9%</b>의 가파른 성장을 지속하며
-            전체 출고 매출의 <b>44.7%</b>를 차지,
+            <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">자사PB(한독·시오레 제외, 로켓그로스 포함) 173.6억</span>은
+            전년 91.0억 대비 <b style="color:#059669">YoY +90.8%</b>의 가파른 성장을 지속하며
+            전체 출고 매출의 <b>44.5%</b>를 차지,
             <b>PB 중심 포트폴리오 전환</b>이 가속화되는 흐름.
           </div>
         </div>
