@@ -450,15 +450,15 @@ const D = {
     mcn:    [0, 0, 1000, 3000, 6000, 10000, 15000, 20000, 40000, 60000, 100000, 45000],
   },
   actual: {
-    total:    [443120, 407932, 436642, 334662, 463891, 428918, 416449, 395943, 427475, 185574, 17545, null],
-    health:   [442662, 406176, 431471, 328933, 439234, 404905, 399989, 365675, 408150, 185574, 17545, null],
+    total:    [443120, 407932, 436642, 334662, 463891, 428918, 416449, 395943, 427475, 185574, 37830, null],
+    health:   [442662, 406176, 431471, 328933, 439234, 404905, 399989, 365675, 408150, 185574, 37830, null],
     beauty:   [458, 389, 4995, 3891, 6648, 11719, 8407, 4227, 3443, 0, null, null],
     global:   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null, null],
     pharmacy: [0, 959, 33, 308, 12760, 4110, 3163, 6673, 5204, 0, null, null],
     mcn:      [0, 407, 143, 1530, 5248, 8184, 4891, 19368, 10679, 0, null, null],
   },
   // 전년 실적 (만원) — 2025년 월별
-  prev2025: [97446, 106487, 101191, 97511, 100648, 75910, 84657, 104816, 135939, 100378, 156975, 125648],
+  prev2025: [303656, 280040, 310121, 302000, 278721, 274301, 255950, 296271, 330897, 220548, 182350, 246530],
   // 2026 월별 자사PB 출고 (한독·시오레 제외 · 로켓그로스 포함, 만원) — raw 실측
   actualPB: [192148, 203512, 150180, 137616, 137599, 151696, 176073, 137248, 162879, 154849, 37830, null],
   // 전년 자사PB 출고만 (한독·시오레 제외, 만원) — raw 실측
@@ -1295,9 +1295,9 @@ const D = {
             <span style="margin-right:6px">💰</span>① 매출 실적
           </div>
           <div style="font-size:15px;line-height:1.75;color:var(--text)">
-            <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">누적 매출 394.1억(목표 439.5억·달성 89.7%)</span>으로
-            전년 동기 대비 <b style="color:#059669">+38.1% 성장</b>을 지속,
-            11월(~4일)은 <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">PB 출고 기준 3.78억</span>으로
+            <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">누적 매출 397.8억(목표 499.5억·달성 79.6%)</span>으로
+            전년 동기 대비 <b style="color:#059669">+31.1% 성장</b>을 지속,
+            11월(~11일)은 <span onclick="document.getElementById('sec1').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#2563eb;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">PB 출고 기준 3.78억</span>으로
             전년 동월(15.70억)의 <b style="color:#059669">12.1%</b>를 기록하며 <b>전년 월 실적을 상회</b> 중.
           </div>
         </div>
@@ -1354,7 +1354,7 @@ const D = {
       <p style="font-size:15px;line-height:1.8;color:var(--text);margin:0 0 10px">
         <span onclick="document.getElementById('sec4').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#f59e0b;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">1~10월 공구 누적 717.28억</span>으로
         전년 동기 523.4억 대비 <b style="color:#059669">+37.0%</b>의 완만한 성장 기조.
-        9월 74.3억을 피크로 <span onclick="document.getElementById('sec4').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#f59e0b;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">11월(~4일)은 65.61억</span>이 집계되어 전월의 88.3% 수준 진행,
+        9월 74.3억을 피크로 <span onclick="document.getElementById('sec4').scrollIntoView({behavior:'smooth',block:'start'})" style="color:#f59e0b;cursor:pointer;text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;font-weight:600">11월(~11일)은 65.61억</span>이 집계되어 전월의 88.3% 수준 진행,
         월말 2주 공구 집중 론칭 성과가 10월 피크를 좌우할 전망.
       </p>
       <p style="font-size:15px;line-height:1.8;color:var(--text);margin:0 0 10px">
@@ -1529,7 +1529,7 @@ const D = {
           <th class="num">7월</th>
           <th class="num">8월</th>
           <th class="num">9월</th><th class="num">10월</th>
-          <th class="num partial-month-hdr" style="color:var(--orange)">11월(~4일)</th>
+          <th class="num partial-month-hdr" style="color:var(--orange)">11월(~11일)</th>
           <th class="num ytd-sum-hdr">1~9월 합계</th>
           <th class="num">월평균</th>
           <th>추이</th>
@@ -1593,7 +1593,7 @@ const D = {
         <thead><tr>
           <th>#</th><th>약사</th><th>닉네임</th><th>기수</th>
           <th class="num">2026 누적</th>
-          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num">8월</th><th class="num">9월</th><th class="num">10월</th><th class="num partial-month-hdr" style="color:var(--orange)">11월(~4일)</th>
+          <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th><th class="num">4월</th><th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num">8월</th><th class="num">9월</th><th class="num">10월</th><th class="num partial-month-hdr" style="color:var(--orange)">11월(~11일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (43~46주)</th><th class="num">건당 평균</th><th>주력 브랜드</th>
         </tr></thead>
         <tbody id="pharmTableBody"></tbody>
@@ -1636,7 +1636,7 @@ const D = {
           <th class="num">2026 누적</th><th class="num">비중</th>
           <th class="num">1월</th><th class="num">2월</th><th class="num">3월</th>
           <th class="num">4월</th>
-          <th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num">8월</th><th class="num">9월</th><th class="num">10월</th><th class="num partial-month-hdr" style="color:var(--orange)">11월(~4일)</th>
+          <th class="num">5월</th><th class="num">6월</th><th class="num">7월</th><th class="num">8월</th><th class="num">9월</th><th class="num">10월</th><th class="num partial-month-hdr" style="color:var(--orange)">11월(~11일)</th>
           <th class="week-col-hdr" style="min-width:160px;text-align:left;padding-left:12px">주간실적 (43~46주)</th><th>추이</th>
         </tr></thead>
         <tbody id="brandTableBody"></tbody>
